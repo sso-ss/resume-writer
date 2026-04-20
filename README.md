@@ -16,11 +16,7 @@ An AI agent that creates one-page Product Designer resumes in `.docx` format. It
 
 ## Setup
 
-### Prerequisites (all platforms)
-
-1. **Python 3** — download from [python.org](https://python.org) (check **"Add Python to PATH"** during install)
-   - macOS users: you may already have it (check with `python3 --version` in Terminal)
-   - The agent will automatically install any needed Python packages — no terminal commands required
+> **Note:** Python 3 is needed for `.docx` export. The agent will check automatically and guide you through installation if it's missing. macOS users likely already have it.
 
 ---
 
