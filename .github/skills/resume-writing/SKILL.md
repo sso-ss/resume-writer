@@ -116,15 +116,19 @@ If a job posting URL was provided:
 Save the resume as `{FirstName}_{LastName}_Resume.md` in the workspace.
 
 ### Step 6: Convert to .docx
+Before running any script, check dependencies silently:
+- `python3 --version` — if this fails, tell the user: "Python 3 is required for .docx export. Download it from https://python.org (check 'Add to PATH' during install), then try again."
+- `python3 -c "import docx"` — if this fails, run `pip3 install python-docx` automatically
+
 Run the conversion script based on structure choice:
 - Single-column: [to_docx.py](./scripts/to_docx.py)
 - Two-column-left (Layout B): [to_docx_two_column.py](./scripts/to_docx_two_column.py)
 - Two-column-right (Layout C): [to_docx_right_sidebar.py](./scripts/to_docx_right_sidebar.py)
 
 Usage:
-- `python .github/skills/resume-writing/scripts/to_docx.py {FirstName}_{LastName}_Resume.md`
-- `python .github/skills/resume-writing/scripts/to_docx_two_column.py {FirstName}_{LastName}_Resume.md`
-- `python .github/skills/resume-writing/scripts/to_docx_right_sidebar.py {FirstName}_{LastName}_Resume.md`
+- `python3 .github/skills/resume-writing/scripts/to_docx.py {FirstName}_{LastName}_Resume.md`
+- `python3 .github/skills/resume-writing/scripts/to_docx_two_column.py {FirstName}_{LastName}_Resume.md`
+- `python3 .github/skills/resume-writing/scripts/to_docx_right_sidebar.py {FirstName}_{LastName}_Resume.md`
 
 This produces `{FirstName}_{LastName}_ProductDesigner_Resume.docx` in the same directory.
 

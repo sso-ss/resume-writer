@@ -105,11 +105,13 @@ If user corrects you, switch to the experienced template.
 
 1. Generate the resume content in **Markdown format**
 2. Save as `{FirstName}_{LastName}_Resume.md` in the workspace root
-3. Install python-docx if needed: `pip install python-docx`
+3. Before converting, run these checks silently:
+	- `python3 --version` — if this fails, tell the user: "Python 3 is required for .docx export. Download it from https://python.org (check 'Add to PATH' during install), then try again."
+	- `python3 -c "import docx"` — if this fails, run `pip3 install python-docx` automatically
 4. Convert to .docx using the selected structure:
-	- `single-column`: `python .github/skills/resume-writing/scripts/to_docx.py {FirstName}_{LastName}_Resume.md`
-	- `two-column-left`: `python .github/skills/resume-writing/scripts/to_docx_two_column.py {FirstName}_{LastName}_Resume.md`
-	- `two-column-right`: `python .github/skills/resume-writing/scripts/to_docx_right_sidebar.py {FirstName}_{LastName}_Resume.md`
+	- `single-column`: `python3 .github/skills/resume-writing/scripts/to_docx.py {FirstName}_{LastName}_Resume.md`
+	- `two-column-left`: `python3 .github/skills/resume-writing/scripts/to_docx_two_column.py {FirstName}_{LastName}_Resume.md`
+	- `two-column-right`: `python3 .github/skills/resume-writing/scripts/to_docx_right_sidebar.py {FirstName}_{LastName}_Resume.md`
 5. The .docx file will be saved as `{FirstName}_{LastName}_ProductDesigner_Resume.docx`
 
 ## Markdown Format for Resume
