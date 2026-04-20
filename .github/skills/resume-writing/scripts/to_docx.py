@@ -33,7 +33,8 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None) -> str:
         sys.exit(1)
 
     if docx_path is None:
-        docx_path = str(md_file.with_suffix(".docx"))
+        base = md_file.stem.replace("_Resume", "")
+        docx_path = str(md_file.with_name(f"{base}_ProductDesigner_Resume.docx"))
 
     content = md_file.read_text(encoding="utf-8")
     lines = content.split("\n")
@@ -152,6 +153,10 @@ def _add_formatted_run(paragraph, text: str, size=None, bold=False, color=None):
         if part.startswith("**") and part.endswith("**"):
             run = paragraph.add_run(part[2:-2])
             run.bold = True
+            if size:
+                run.font.size = size
+            if color:
+                run.font.color.rgb = color
         else:
             # Handle [text](url) links — render as plain text (ATS-safe)
             link_parts = re.split(r"\[([^\]]+)\]\([^\)]+\)", part)
@@ -159,26 +164,26 @@ def _add_formatted_run(paragraph, text: str, size=None, bold=False, color=None):
                 if lp:
                     run = paragraph.add_run(lp)
                     run.bold = bold
-        if size:
-            for run in paragraph.runs:
-                run.font.size = size
-        if color:
-            for run in paragraph.runs:
-                run.font.color.rgb = color
+                    if size:
+                        run.font.size = size
+                    if color:
+                        run.font.color.rgb = color
 
 
 def _add_bottom_border(paragraph):
     """Add a thin bottom border to a paragraph for section headings."""
     from docx.oxml.ns import qn
-    from lxml import etree
+    from docx.oxml import OxmlElement
 
     pPr = paragraph._p.get_or_add_pPr()
-    pBdr = etree.SubElement(pPr, qn("w:pBdr"))
-    bottom = etree.SubElement(pBdr, qn("w:bottom"))
+    pBdr = OxmlElement("w:pBdr")
+    bottom = OxmlElement("w:bottom")
     bottom.set(qn("w:val"), "single")
     bottom.set(qn("w:sz"), "4")
     bottom.set(qn("w:space"), "1")
     bottom.set(qn("w:color"), "AAAAAA")
+    pBdr.append(bottom)
+    pPr.append(pBdr)
 
 
 if __name__ == "__main__":

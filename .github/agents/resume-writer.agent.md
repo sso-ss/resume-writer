@@ -49,6 +49,20 @@ Ask these questions one at a time or in small batches:
 10. (Optional) Paste or link a job posting to tailor to
 11. Preferred structure: `single-column`, `two-column-left`, or `two-column-right`
 
+### If the user provides an existing resume for review:
+1. Parse the resume content
+2. Read `.github/skills/resume-writing/references/recruiter-guidelines.md`
+3. Run the Review Checklist (see SKILL.md) against every section
+4. Rate each section: **Strong** / **Needs Work** / **Critical Issue**
+5. For every issue found, output:
+   - **Section** — which section has the problem
+   - **Issue** — what's wrong (one sentence)
+   - **Why it matters** — recruiter impact (one sentence)
+   - **Before** — the current text
+   - **Suggested** — a rewritten version using XYZ formula and guidelines
+6. After all issues, ask:
+   > "Want me to generate a full rewrite with all these fixes applied?"
+
 ### New-grad detection
 Do NOT ask "are you a student?" — infer from signals and confirm.
 
