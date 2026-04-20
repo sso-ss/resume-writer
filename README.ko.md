@@ -101,6 +101,30 @@ AI 에이전트가 1페이지 Product Designer 이력서를 `.docx` 형식으로
 
 > **ATS 주의사항:** 2단 레이아웃은 ATS 파싱 정확도가 떨어질 수 있습니다. 채용 사이트나 회사 채용 페이지를 통해 지원할 때는 `single-column`을 사용하세요.
 
+## 프롬프트 예시
+
+**처음부터 작성:**
+> Help me write a Product Designer resume
+
+**정보 붙여넣기:**
+> Here's my experience, please build a resume:
+> - Senior Product Designer at Spotify, 2021-present
+> - Led redesign of playlist creation flow, increased saves by 25%
+> - Built design system with 80+ components adopted by 4 teams
+> ...
+
+**채용공고에 맞춤화:**
+> Tailor my resume to this job posting: https://example.com/jobs/senior-product-designer
+
+**기존 이력서 리뷰:**
+> Review my resume and tell me what to fix: [이력서 텍스트 붙여넣기]
+
+**레이아웃 선택:**
+> Generate my resume in two-column-left layout
+
+**신입/졸업예정:**
+> I'm graduating in May with a BFA in Interaction Design. Help me write a resume
+
 ## 더 나은 결과를 위한 팁
 
 - **포트폴리오 URL**을 준비하세요 — 에이전트가 가장 먼저 물어보며 필수로 취급합니다

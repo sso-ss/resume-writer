@@ -101,6 +101,30 @@ The agent creates two files in this folder:
 
 > **ATS Warning:** Two-column layouts may reduce ATS parsing accuracy. Use `single-column` when applying through job boards or company career pages.
 
+## Example Prompts
+
+**Start from scratch:**
+> Help me write a Product Designer resume
+
+**Paste your info:**
+> Here's my experience, please build a resume:
+> - Senior Product Designer at Spotify, 2021-present
+> - Led redesign of playlist creation flow, increased saves by 25%
+> - Built design system with 80+ components adopted by 4 teams
+> ...
+
+**Tailor to a job posting:**
+> Tailor my resume to this job posting: https://example.com/jobs/senior-product-designer
+
+**Review an existing resume:**
+> Review my resume and tell me what to fix: [paste resume text]
+
+**Choose a layout:**
+> Generate my resume in two-column-left layout
+
+**New grad:**
+> I'm graduating in May with a BFA in Interaction Design. Help me write a resume
+
 ## Tips for Best Results
 
 - Have your **portfolio URL** ready — the agent asks for it first and treats it as critical
