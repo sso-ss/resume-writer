@@ -18,7 +18,7 @@ from to_html_editorial import build_html
 
 
 BODY_FONT = "DM Sans"
-DISPLAY_FONT = "Manrope"
+DISPLAY_FONT = "Manrope ExtraBold"
 TEXT = "232924"
 ACCENT = "466454"
 MAIN_PT = 374.6
@@ -169,7 +169,7 @@ def build_layout_editorial(md_path, docx_path=None, *, editorial_header=None):
         spacing.set(qn("w:val"), "30")
         run._r.get_or_add_rPr().append(spacing)
     result = paragraph(document, after=5.25, line=1.1, size=29.5)
-    add_text(result, header.find("h1").text_content(), 29.5, True, "1D2821", DISPLAY_FONT)
+    add_text(result, header.find("h1").text_content(), 29.5, False, "1D2821", DISPLAY_FONT)
     result = paragraph(document, after=9.75, line=1.45, size=12.75)
     add_text(result, header.xpath('./p[@class="role"]')[0].text_content(), 12.75, color=ACCENT)
     result = paragraph(document, after=9.75)

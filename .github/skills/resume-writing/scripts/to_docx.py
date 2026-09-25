@@ -51,7 +51,7 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None, hybrid: boo
     # -- Default font --
     style = doc.styles["Normal"]
     font = style.font
-    font.name = "Calibri"
+    font.name = "Arial"
     font.size = Pt(10)
     font.color.rgb = RGBColor(0x33, 0x33, 0x33)
     style.paragraph_format.space_after = Pt(2)

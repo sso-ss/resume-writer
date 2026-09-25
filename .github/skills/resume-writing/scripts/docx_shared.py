@@ -18,7 +18,7 @@ SIDEBAR_BG = "F0EFEB"
 TEXT_DARK = RGBColor(0x1A, 0x1A, 0x1A)
 TEXT_BODY = RGBColor(0x33, 0x33, 0x33)
 TEXT_MUTED = RGBColor(0x66, 0x66, 0x66)
-FONT = "Calibri"
+FONT = "Arial"
 
 SIDEBAR_W = Inches(2.4)
 MAIN_W = Inches(4.8)

@@ -3,10 +3,15 @@
 
 import argparse
 import json
+import re
 import secrets
 import tempfile
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+
+from docx import Document
+from docx.oxml.ns import qn
+from docx.shared import RGBColor
 
 from to_docx import create_resume_doc
 from to_docx_editorial import build_layout_editorial
@@ -25,11 +30,27 @@ WORD_BUILDERS = {
 }
 
 
+def apply_accent(docx_path, layout, accent_color, markdown):
+    defaults = ("466454", "365D47") if layout == "editorial-html" else ("2B4C5E",)
+    replacement = accent_color.lstrip("#").upper()
+    document = Document(docx_path)
+    if layout == "single-column":
+        headings = {line[3:].strip().upper() for line in markdown.splitlines() if line.startswith("## ")}
+        for paragraph in document.paragraphs:
+            if paragraph.text.strip() in headings:
+                for run in paragraph.runs:
+                    run.font.color.rgb = RGBColor.from_string(replacement)
+    for element in (document.element, *(style.element for style in document.styles)):
+        for color in element.xpath(".//w:color"):
+            if color.get(qn("w:val"), "").upper() in defaults:
+                color.set(qn("w:val"), replacement)
+    document.save(docx_path)
+
+
 def create_server(html_path, layout="editorial-html", port=0):
     html_path = Path(html_path).resolve()
     if layout not in WORD_BUILDERS:
         raise ValueError(f"Unknown resume layout: {layout}")
-    word_builder = WORD_BUILDERS[layout]
     token = secrets.token_urlsafe(32)
 
     class Handler(BaseHTTPRequestHandler):
@@ -66,6 +87,13 @@ def create_server(html_path, layout="editorial-html", port=0):
                     raise ValueError("Invalid resume size")
                 data = json.loads(self.rfile.read(length))
                 markdown = data["markdown"]
+                selected_layout = data.get("layout", layout)
+                if selected_layout not in WORD_BUILDERS:
+                    raise ValueError("Invalid resume layout")
+                accent_color = data.get("accent_color")
+                if accent_color is not None and (not isinstance(accent_color, str)
+                                                 or not re.fullmatch(r"#[0-9a-fA-F]{6}", accent_color)):
+                    raise ValueError("Invalid accent color")
                 if not isinstance(markdown, str) or not markdown.startswith("# "):
                     raise ValueError("Invalid resume content")
                 editorial_header = data.get("editorial_header", {})
@@ -81,20 +109,23 @@ def create_server(html_path, layout="editorial-html", port=0):
                 with tempfile.TemporaryDirectory(prefix="resume-export-") as directory:
                     source = Path(directory) / "resume.md"
                     is_pdf = self.path == "/export-pdf"
-                    output = Path(directory) / ("resume.pdf" if is_pdf else "resume.docx")
+                    output = Path(directory) / ("resume.pdf" if is_pdf else "Preview_Candidate_ProductDesigner_Resume.docx")
                     source.write_text(markdown, encoding="utf-8")
                     if is_pdf:
                         from to_pdf_editorial import build_pdf
-                        build_pdf(str(source), str(output), layout)
-                    elif layout == "editorial-html":
-                        word_builder(str(source), str(output), editorial_header=editorial_header)
+                        build_pdf(str(source), str(output), selected_layout, accent_color)
+                    elif selected_layout == "editorial-html":
+                        WORD_BUILDERS[selected_layout](str(source), str(output), editorial_header=editorial_header)
                     else:
-                        word_builder(str(source), str(output))
+                        WORD_BUILDERS[selected_layout](str(source), str(output))
+                    if accent_color and not is_pdf:
+                        apply_accent(output, selected_layout, accent_color, markdown)
                     content = output.read_bytes()
             except Exception:
-                self.respond(500, b"Export failed. Your browser edits are unchanged.", "text/plain")
+                self.respond(500, b"Analysis failed. Your browser edits are unchanged.", "text/plain")
                 return
-            content_type = "application/pdf" if is_pdf else "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            content_type = ("application/pdf" if is_pdf
+                            else "application/vnd.openxmlformats-officedocument.wordprocessingml.document")
             self.respond(200, content, content_type)
 
     return ThreadingHTTPServer(("127.0.0.1", port), Handler)

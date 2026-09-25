@@ -17,7 +17,11 @@ class EditorialHeaderTests(unittest.TestCase):
                 output = Path(build_html(str(source), str(Path(directory) / f"{layout}.html"), layout))
                 document = html.fromstring(output.read_text())
                 self.assertEqual(document.find("body").get("data-layout"), layout)
-                self.assertEqual(document.xpath('//div[@class="toolbar"]/p')[0].text_content(), layout.replace("-", " ").title() + " preview")
+                options = document.xpath('//select[@id="preview-layout"]/option/@value')
+                self.assertEqual(options, ["single-column", "two-column-left", "two-column-right", "two-column-right-refined", "editorial-html"])
+                labels = [option.text_content() for option in document.xpath('//select[@id="preview-layout"]/option')]
+                self.assertEqual(labels, ["Single Column", "Left Sidebar", "Right Sidebar", "Refined Right Sidebar", "Editorial"])
+                self.assertFalse(document.xpath('//*[@id="check-ats" or @id="ats-report"]'))
             with self.assertRaisesRegex(ValueError, "Unknown resume layout"):
                 build_html(str(source), layout="unknown")
 

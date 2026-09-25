@@ -154,24 +154,25 @@ def build_html(md_path: str, html_path: Optional[str] = None, layout: str = "edi
         f'<h1>{escape(name)}</h1><p class="role">{escape(role)}</p>'
     )
     contact = f'<div class="contact">{contact_html(contact_line)}</div>'
+    summary_label = '<h2 class="summary-label">Summary</h2>'
     intro = f'<p class="intro">{escape(summary)}</p>'
     main_sections = experience + projects
     sidebar_sections = expertise + tools + recognition + education
     if layout == "single-column":
-        page_content = f'{identity}{contact}{intro}</header><div class="layout"><div>{main_sections}{sidebar_sections}</div></div>'
+        page_content = f'{identity}{contact}{summary_label}{intro}</header><div class="layout"><div>{main_sections}{sidebar_sections}</div></div>'
     elif layout == "two-column-left":
         page_content = (
-            f'<div class="layout"><aside class="sidebar">{identity}{contact}</header>{sidebar_sections}</aside>'
+            f'<div class="layout"><aside class="sidebar">{identity}{contact}{summary_label}</header>{sidebar_sections}</aside>'
             f'<div class="main-column">{intro}{main_sections}</div></div>'
         )
     elif layout == "two-column-right":
         page_content = (
-            f'{identity}</header><div class="layout"><div class="main-column">{intro}{main_sections}</div>'
+            f'{identity}{summary_label}</header><div class="layout"><div class="main-column">{intro}{main_sections}</div>'
             f'<aside class="sidebar">{contact}{sidebar_sections}</aside></div>'
         )
     else:
         page_content = (
-            f'{identity}{contact}{intro}</header><div class="layout"><div class="main-column">{main_sections}</div>'
+            f'{identity}{contact}{summary_label}{intro}</header><div class="layout"><div class="main-column">{main_sections}</div>'
             f'<aside class="sidebar">{sidebar_sections}</aside></div>'
         )
 

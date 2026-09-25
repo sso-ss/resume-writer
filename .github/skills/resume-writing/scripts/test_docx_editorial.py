@@ -1,4 +1,3 @@
-import io
 import tempfile
 import threading
 import unittest
@@ -94,7 +93,7 @@ class EditorialWordTests(unittest.TestCase):
             self.assertNotIn('SUMMARY', header)
             self.assertEqual(document.element.xpath('.//w:pBdr'), [])
             name = next(item for item in document.paragraphs if item.text == 'Test Designer')
-            self.assertEqual(name.runs[0].font.name, 'Manrope')
+            self.assertEqual(name.runs[0].font.name, 'Manrope ExtraBold')
             self.assertEqual(name.runs[0].font.size, Pt(29.5))
             self.assertEqual(name.paragraph_format.line_spacing_rule, WD_LINE_SPACING.EXACTLY)
             main, gutter, sidebar = document.tables[0].rows[0].cells
