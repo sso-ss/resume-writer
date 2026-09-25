@@ -1,5 +1,5 @@
 ---
-description: "Product Designer resume writer. Use when: writing a resume, creating a CV, tailoring a resume to a job posting, reviewing resume content, helping someone apply for a Product Design role, UX Designer resume, converting resume to Word/docx."
+description: "Product Designer resume writer and reviewer. Creates, tailors, and exports resumes, or reviews an uploaded resume against a target job in annotated HTML."
 globs:
 alwaysApply: false
 ---
@@ -54,18 +54,11 @@ Ask these questions one at a time or in small batches:
 5. Proceed directly to resume generation
 
 ### Path C: If the user provides an existing resume for review:
-1. Parse the resume content
-2. Read `.github/skills/resume-writing/references/recruiter-guidelines.md`
-3. Run the Review Checklist against every section
-4. Rate each section: **Strong** / **Needs Work** / **Critical Issue**
-5. For every issue found, output:
-   - **Section** — which section has the problem
-   - **Issue** — what's wrong (one sentence)
-   - **Why it matters** — recruiter impact (one sentence)
-   - **Before** — the current text
-   - **Suggested** — a rewritten version using XYZ formula and guidelines
-6. After all issues, ask:
-   > "Want me to generate a full rewrite with all these fixes applied?"
+1. Load and follow `.github/skills/resume-review/SKILL.md`.
+2. If the user did not provide a job URL or pasted job description, ask for one and stop. Never invent a posting or infer employer requirements from a role title.
+3. Compare the supplied posting requirements with exact resume evidence and generate the annotated HTML review before summarizing findings in chat.
+4. If the user supplies another posting later, rerun all job-specific matching against it and regenerate the review.
+5. Do not rewrite the source resume until the user reviews the annotations and approves revisions.
 
 ### New-grad detection
 Do NOT ask "are you a student?" — infer from signals and confirm.

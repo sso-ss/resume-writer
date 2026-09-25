@@ -8,7 +8,7 @@ AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HT
 
 - **처음부터 이력서 작성** — 몇 가지 질문에 답하면 완성된 `.docx` 파일 제공
 - **기존 정보 붙여넣기** — 경력 정보를 붙여넣으면 바로 이력서 생성
-- **기존 이력서 리뷰** — 항목별 피드백과 수정안 제시
+- **타겟 채용공고와 이력서 매칭** — 요구사항별 매칭과 모든 경력·프로젝트 bullet 분석을 HTML 주석으로 제공
 - **채용공고 맞춤화** — 특정 채용공고의 키워드를 반영
 - **5가지 레이아웃** — 단일 컬럼(ATS 호환), 2단 좌측 사이드바, 2단 우측 사이드바, 개선된 2단 우측 사이드바, 편집 가능한 HTML
 
@@ -100,7 +100,9 @@ AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HT
 
 > **ATS 주의사항:** 2단 레이아웃은 ATS 파싱 정확도가 떨어질 수 있습니다. 채용 사이트나 회사 채용 페이지를 통해 지원할 때는 `single-column`을 사용하세요.
 
-`python3 .github/skills/resume-writing/scripts/serve_resume.py 이름_Resume.md --layout single-column`을 실행하고 `single-column`을 선택한 레이아웃으로 바꾸세요. HTML 미리보기, Word, PDF는 같은 레이아웃을 사용합니다. 검토와 다운로드 중에는 서버를 실행 상태로 유지하세요. 브라우저, Word, PDF 렌더링은 조금 다를 수 있습니다. `file://` HTML은 Python 내보내기를 실행할 수 없고, 브라우저 수정 내용은 원본 Markdown에 자동 반영되지 않습니다.
+`python3 .github/skills/resume-writing/scripts/serve_resume.py 이름_Resume.md --layout single-column`을 실행하고 `single-column`을 초기 레이아웃으로 바꾸세요. 미리보기의 Template 메뉴에서 레이아웃을 비교하고 Accent 색상 선택기로 제목과 링크 색상을 바꿀 수 있습니다. Word와 PDF에는 현재 레이아웃, 선택한 강조색, 브라우저 수정 내용이 적용됩니다. 사이드바의 중립 배경색은 유지됩니다. 검토와 다운로드 중에는 서버를 실행 상태로 유지하세요. 브라우저, Word, PDF 렌더링은 조금 다를 수 있습니다. `file://` HTML은 Python 내보내기를 실행할 수 없고, 브라우저 수정 내용은 원본 Markdown에 자동 반영되지 않습니다.
+
+이력서 리뷰는 편집 가능한 내보내기 미리보기와 별도입니다. Markdown 또는 Word 이력서와 타겟 채용공고 URL이나 전체 채용공고 내용을 제공해야 하며, 채용공고가 없으면 에이전트가 리뷰 전에 요청합니다. 주요 요구사항을 추출해 강한 매칭, 부분 매칭, 이력서에서 확인되지 않는 항목을 보여주는 HTML 페이지가 열립니다. 모든 매칭은 이력서의 정확한 근거 문장에 연결되며, 모든 경력 및 프로젝트 bullet은 해당 역할에 맞춰 주도성, 범위, 방법, 결과, 근거, 명확성을 평가받습니다. 같은 이력서에 다른 URL이나 채용공고 내용을 제공하면 매칭 분석을 새로 생성할 수 있습니다. 이는 정성적 리뷰이며 ATS 인증이나 숫자 기반 적합도 점수가 아닙니다.
 
 ## 프롬프트 예시
 
@@ -118,7 +120,7 @@ AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HT
 > Tailor my resume to this job posting: https://example.com/jobs/senior-product-designer
 
 **기존 이력서 리뷰:**
-> Review my resume and tell me what to fix: [이력서 텍스트 붙여넣기]
+> Review my uploaded resume for this job and show me annotated feedback: https://example.com/jobs/senior-product-designer
 
 **레이아웃 선택:**
 > Generate my resume in two-column-left layout
@@ -148,7 +150,9 @@ Resume/
 ├── .github/
 │   ├── agents/
 │   │   └── resume-writer.agent.md       ← VS Code Copilot 에이전트
-│   └── skills/resume-writing/
+│   └── skills/
+│       ├── resume-review/                ← 주석이 포함된 HTML 리뷰 워크플로
+│       └── resume-writing/
 │       ├── SKILL.md                     ← 절차 및 XYZ 공식
 │       ├── references/
 │       │   └── recruiter-guidelines.md  ← 항목별 작성 규칙

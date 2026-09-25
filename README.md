@@ -8,7 +8,7 @@ An AI agent that creates Product Designer resumes in Word or editable HTML forma
 
 - **Creates resumes from scratch** — answers a few questions, gets a finished `.docx`
 - **Rewrites from a paste** — dump your career info and it builds the resume immediately
-- **Reviews existing resumes** — section-by-section feedback with suggested rewrites
+- **Matches resumes to target jobs** — annotated requirement matches plus content analysis for every experience and project bullet
 - **Tailors to job postings** — mirrors keywords from a specific listing
 - **5 layout options** — single-column (ATS-safe), two-column left sidebar, classic right sidebar, refined right sidebar, editable editorial HTML
 
@@ -100,7 +100,9 @@ The agent uses a preview-first flow:
 
 > **ATS Warning:** Two-column layouts may reduce ATS parsing accuracy. Use `single-column` when applying through job boards or company career pages.
 
-Run `python3 .github/skills/resume-writing/scripts/serve_resume.py YourName_Resume.md --layout single-column`, replacing `single-column` with your selected layout. The preview, Word export, and PDF export all use that layout. Keep the server running while reviewing and downloading. Rendering can differ slightly between browser, Word, and PDF. Standalone `file://` HTML cannot invoke Python, and browser edits do not change the original Markdown.
+Run `python3 .github/skills/resume-writing/scripts/serve_resume.py YourName_Resume.md --layout single-column`, replacing `single-column` with your initial layout. Use the Template menu to compare layouts and the Accent picker to change heading/link color; Word and PDF exports include the selected layout, accent, and browser edits. The neutral sidebar background stays fixed. Keep the server running while reviewing and downloading. Rendering can differ slightly between browser, Word, and PDF. Standalone `file://` HTML cannot invoke Python, and browser edits do not change the original Markdown.
+
+Resume review is separate from the editable export preview. Upload a Markdown or Word resume with a target job URL or the full pasted job description; if the posting is missing, the agent asks for it before reviewing. The agent extracts the role's main requirements and opens an HTML page showing strong matches, partial matches, and requirements not demonstrated in the resume. Every match links to exact resume evidence, and every Experience and Projects bullet receives role-specific feedback on ownership, scope, method, outcome, evidence, and clarity. Provide another URL or pasted description at any time to regenerate the matching analysis for the same resume. This is a qualitative review, not an ATS certification or numeric match score.
 
 ### PDF Download Setup
 Install these dependencies in the same Python environment as the preview server:
@@ -126,7 +128,7 @@ The current **Save as PDF** button downloads a text-based PDF through local Chro
 > Tailor my resume to this job posting: https://example.com/jobs/senior-product-designer
 
 **Review an existing resume:**
-> Review my resume and tell me what to fix: [paste resume text]
+> Review my uploaded resume for this job and show me annotated feedback: https://example.com/jobs/senior-product-designer
 
 **Choose a layout:**
 > Generate my resume in two-column-left layout
@@ -156,7 +158,9 @@ Resume/
 ├── .github/
 │   ├── agents/
 │   │   └── resume-writer.agent.md       ← VS Code Copilot agent
-│   └── skills/resume-writing/
+│   └── skills/
+│       ├── resume-review/                ← annotated HTML review workflow
+│       └── resume-writing/
 │       ├── SKILL.md                     ← procedures & XYZ formula
 │       ├── references/
 │       │   └── recruiter-guidelines.md  ← section-by-section rules

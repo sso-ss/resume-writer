@@ -1,6 +1,6 @@
 ---
 name: resume-writing
-description: "Write and tailor Product Designer resumes. Use when: creating a resume, rewriting a resume, tailoring a resume to a job posting, reviewing resume content, converting resume to .docx format."
+description: "Writes and tailors Product Designer resumes. Use when creating, rewriting, tailoring to a job posting, or converting resume content to Word, PDF, or editable HTML."
 argument-hint: "Paste your career info, or say 'help me write a resume' to start the interview"
 ---
 
@@ -12,7 +12,7 @@ argument-hint: "Paste your career info, or say 'help me write a resume' to start
 - User has a job posting URL and wants a tailored resume
 - User wants to convert resume content to .docx format
 
-## Three Workflow Paths
+## Two Workflow Paths
 
 ### Path A: Interview Mode
 Triggered when the user says something vague like "help me write a resume" without providing career details.
@@ -41,22 +41,7 @@ Triggered when the user provides raw career information (even if messy or unstru
 4. Ask for structure choice: `single-column`, `two-column-left`, `two-column-right`, `two-column-right-refined`, or `editorial-html`
 5. Proceed directly to generating the resume
 
-### Path C: Review Mode
-Triggered when the user provides an existing resume and asks for review, feedback, or critique.
-
-1. Parse the resume and identify all sections
-2. Read the recruiter guidelines: [recruiter-guidelines.md](./references/recruiter-guidelines.md)
-3. Evaluate each section against the Review Checklist (below)
-4. Rate each section: **Strong** / **Needs Work** / **Critical Issue**
-5. For every issue found, output:
-   - **Section** — which section has the problem
-   - **Issue** — what's wrong (one sentence)
-   - **Why it matters** — recruiter impact (one sentence)
-   - **Before** — the current text from the resume
-   - **Suggested** — a rewritten version following XYZ formula and guidelines
-6. After all issues, ask:
-   > "Want me to generate a full rewrite with all these fixes applied?"
-7. If user says yes, switch to Path B (paste-and-go) using the original resume content + review fixes
+For critique of an uploaded resume, use the separate `resume-review` skill. Return here only after the user approves revisions or asks for a full rewrite.
 
 ## Resume Generation Procedure
 
@@ -117,7 +102,9 @@ If a job posting URL was provided:
 Save the resume as `{FirstName}_{LastName}_Resume.md` in the workspace.
 
 ### Step 6: Generate the editable HTML review first
-Start `python3 .github/skills/resume-writing/scripts/serve_resume.py {FirstName}_{LastName}_Resume.md --layout {selected-layout}` as a long-running local server, then open and link the localhost URL. The first user-facing artifact must be this editable HTML preview, and it must use the layout the user selected. Do not pre-generate or present Word/PDF as final before review. Keep the server running while the user reviews and downloads. **Save as Word** and **Save as PDF** use the same selected layout and include browser edits. Word needs the layout fonts installed for the closest match; line wrapping can vary by renderer. A standalone `file://` HTML cannot run Python exports. Browser edits do not update the source Markdown; incorporate approved changes there when they should become source content. Do not claim a one-page export without checking the actual file.
+Start `python3 .github/skills/resume-writing/scripts/serve_resume.py {FirstName}_{LastName}_Resume.md --layout {selected-layout}` as a long-running local server, then open and link the localhost URL. The first user-facing artifact must be this editable HTML preview, initially using the layout the user selected. The Template menu lets the user compare all five layouts without losing browser edits. Do not pre-generate or present Word/PDF as final before review. Keep the server running while the user reviews and downloads. **Save as Word** and **Save as PDF** use the currently selected layout and include browser edits. Word needs the layout fonts installed for the closest match; line wrapping can vary by renderer. A standalone `file://` HTML cannot run Python exports. Browser edits do not update the source Markdown; incorporate approved changes there when they should become source content. ATS checking is separate from the preview; run it on the exported Word file when requested. Do not claim a one-page export without checking the actual file.
+
+For editorial Word typography, install DM Sans and the static Manrope ExtraBold face, then restart Word if it was open during installation. Verify the actual Word render; Quick Look may substitute fonts or ignore tab alignment. Editorial Word exports use `build_layout_editorial`, never the refined-right generator.
 
 #### PDF Downloads
 **Save as PDF** uses the local server's Playwright Chromium renderer to download a text-based PDF with browser edits. Do not use the integrated browser's print dialog, which can produce an image-only PDF. Install these dependencies in the same Python environment as the server:
@@ -202,73 +189,4 @@ Before delivering the final resume, verify:
 - [ ] Date format is consistent (Mon YYYY – Mon YYYY)
 - [ ] If tailored: job posting keywords appear naturally in bullets
 
-## Review Checklist
-
-Use this checklist when reviewing an existing resume (Path C). Check every item and flag failures.
-
-### Structure
-- [ ] Portfolio link is FIRST in contact info
-- [ ] Portfolio is publicly accessible (no password)
-- [ ] Summary is exactly 3 lines (identity + impact + differentiator)
-- [ ] Section order matches recruiter-guidelines.md
-- [ ] Content fits one page
-- [ ] Key Projects section exists with case study links
-
-### Content Quality
-- [ ] Every bullet uses XYZ formula (Accomplished X, measured by Y, by doing Z)
-- [ ] Every bullet starts with a strong action verb (past tense for past roles)
-- [ ] Every bullet has at least one metric/number
-- [ ] No filler phrases ("passionate about," "detail-oriented," "team player")
-- [ ] No repeated bullet patterns across roles
-- [ ] Bullet count per role is correct (4-5 most recent, 2-3 older)
-- [ ] Seniority language matches career level
-- [ ] No personal pronouns (I, me, my)
-
-### Consistency
-- [ ] Title in header matches title in Summary
-- [ ] Dates are correct and chronological (no overlaps or backwards ranges)
-- [ ] No typos or incomplete sentences
-- [ ] Tense is consistent (past tense for past roles, present for current)
-- [ ] Date format is consistent throughout (Mon YYYY – Mon YYYY)
-
-### Skills & Tools
-- [ ] Skills grouped into 3 categories (Design, Research, Collaboration)
-- [ ] Tools on a single line
-- [ ] No redundant or outdated tools listed
-
-### Review Output Format
-
-Structure the review as:
-
-```
-## Resume Review: [Candidate Name]
-
-### Overall Assessment
-[1-2 sentence verdict]
-
-### Section Ratings
-| Section | Rating |
-|---------|--------|
-| Contact & Portfolio | Strong / Needs Work / Critical Issue |
-| Summary | ... |
-| Experience | ... |
-| Key Projects | ... |
-| Education | ... |
-| Skills & Tools | ... |
-
-### Issues & Suggested Rewrites
-
-#### 1. [Section] — [Issue title]
-**Issue:** [What's wrong]
-**Why it matters:** [Recruiter impact]
-**Before:** [Current text]
-**Suggested:** [Rewritten text]
-
-#### 2. ...
-
-### Top Actions
-[Numbered list of 3-5 highest-priority fixes]
-
----
-Want me to generate a full rewrite with all these fixes applied?
-```
+Route critique-only requests to the `resume-review` skill before applying rewrites.
