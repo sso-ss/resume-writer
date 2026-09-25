@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 
 from docx import Document
-from docx.enum.text import WD_TAB_ALIGNMENT
+from docx.enum.text import WD_LINE_SPACING, WD_TAB_ALIGNMENT
 from docx.shared import Pt
 from playwright.sync_api import sync_playwright
 
@@ -96,6 +96,7 @@ class EditorialWordTests(unittest.TestCase):
             name = next(item for item in document.paragraphs if item.text == 'Test Designer')
             self.assertEqual(name.runs[0].font.name, 'Manrope')
             self.assertEqual(name.runs[0].font.size, Pt(29.5))
+            self.assertEqual(name.paragraph_format.line_spacing_rule, WD_LINE_SPACING.EXACTLY)
             main, gutter, sidebar = document.tables[0].rows[0].cells
             self.assertEqual([column.width for column in document.tables[0].columns],
                              [Pt(374.6), Pt(24), Pt(132.75)])

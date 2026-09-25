@@ -60,7 +60,7 @@ def inline_runs(paragraph, element, size=7.5, bold=False, color=TEXT):
             add_text(paragraph, child.tail, size, bold, color)
 
 
-def paragraph(container, after=0, before=0, line=1.4, keep=False):
+def paragraph(container, after=0, before=0, line=1.4, keep=False, size=7.5):
     if hasattr(container, "_tc") and len(container.paragraphs) == 1 and not container.paragraphs[0].text:
         result = container.paragraphs[0]
     else:
@@ -68,13 +68,13 @@ def paragraph(container, after=0, before=0, line=1.4, keep=False):
     formatting = result.paragraph_format
     formatting.space_before = Pt(before)
     formatting.space_after = Pt(after)
-    formatting.line_spacing = line
+    formatting.line_spacing = Pt(size * line)
     formatting.keep_with_next = keep
     return result
 
 
 def section_heading(container, text, first=False):
-    result = paragraph(container, after=6, before=0 if first else 12, keep=True)
+    result = paragraph(container, after=6, before=0 if first else 12, keep=True, size=6.75)
     run = add_text(result, text.upper(), 6.75, True, ACCENT)
     spacing = OxmlElement("w:spacing")
     spacing.set(qn("w:val"), "23")
@@ -103,7 +103,7 @@ def render_main(cell, element, numbering_id):
         for article in section.findall("article"):
             if article.get("class") == "job":
                 header = article.find("div")
-                result = paragraph(cell, after=4.5, line=1.3, keep=True)
+                result = paragraph(cell, after=4.5, line=1.3, keep=True, size=9.375)
                 result.paragraph_format.tab_stops.add_tab_stop(Pt(MAIN_PT), WD_TAB_ALIGNMENT.RIGHT)
                 inline_runs(result, header.find("h3"), 9.375, True)
                 add_text(result, "\t")
@@ -111,7 +111,7 @@ def render_main(cell, element, numbering_id):
                 bullets = article.findall("ul/li")
                 for index, bullet in enumerate(bullets):
                     last = index == len(bullets) - 1
-                    result = paragraph(cell, after=8.25 if last else 2.25, keep=not last)
+                    result = paragraph(cell, after=8.25 if last else 2.25, keep=not last, size=7.65)
                     formatting = result.paragraph_format
                     formatting.left_indent = Pt(12)
                     formatting.first_line_indent = Pt(-10.5)
@@ -121,7 +121,7 @@ def render_main(cell, element, numbering_id):
                     num_properties.get_or_add_numId().val = numbering_id
                     inline_runs(result, bullet, 7.65)
             else:
-                result = paragraph(cell, after=2.25, line=1.3, keep=True)
+                result = paragraph(cell, after=2.25, line=1.3, keep=True, size=9.375)
                 inline_runs(result, article.find("h3"), 9.375, True)
                 details = article.findall("p")
                 for index, detail in enumerate(details):
@@ -162,22 +162,22 @@ def build_layout_editorial(md_path, docx_path=None, *, editorial_header=None):
     normal.font.name, normal.font.size = BODY_FONT, Pt(7.5)
     normal.paragraph_format.space_after = Pt(0)
     for class_name, size, after, color in (("eyebrow", 6.75, 6.75, ACCENT),):
-        result = paragraph(document, after=after)
+        result = paragraph(document, after=after, size=size)
         text = header.xpath(f'./p[@class="{class_name}"]')[0].text_content()
         run = add_text(result, text.upper(), size, True, color)
         spacing = OxmlElement("w:spacing")
         spacing.set(qn("w:val"), "30")
         run._r.get_or_add_rPr().append(spacing)
-    result = paragraph(document, after=5.25, line=1.1)
+    result = paragraph(document, after=5.25, line=1.1, size=29.5)
     add_text(result, header.find("h1").text_content(), 29.5, True, "1D2821", DISPLAY_FONT)
-    result = paragraph(document, after=9.75)
+    result = paragraph(document, after=9.75, line=1.45, size=12.75)
     add_text(result, header.xpath('./p[@class="role"]')[0].text_content(), 12.75, color=ACCENT)
     result = paragraph(document, after=9.75)
     for index, contact in enumerate(header.find("div")):
         if index:
             add_text(result, "    ", 7.5)
         inline_runs(result, contact, color="58605A")
-    result = paragraph(document, after=10.5, line=1.55)
+    result = paragraph(document, after=10.5, line=1.55, size=8.625)
     inline_runs(result, header.xpath('./p[@class="intro"]')[0], 8.625, color="454E47")
     layout = page.xpath('./div[@class="layout"]')[0]
     table = document.add_table(rows=1, cols=3)
