@@ -13,9 +13,11 @@ Always let the user choose one structure before final output:
 1. `single-column` (default) — ATS-safe and recruiter-friendly
 2. `two-column-left` — name anchored in left sidebar, narrative on right. Designer portfolio feel
 3. `two-column-right` — full-width header, main content left, metadata sidebar right. F-pattern reading
+4. `two-column-right-refined` — full-width name, contact and summary; experience left, skills/recognition/education right
+5. `editorial-html` — editable editorial layout with a right rail; print from browser to PDF
 
 If user does not choose, default to `single-column` and mention why.
-If user says just `two-column`, ask which variant (left or right sidebar).
+If user says just `two-column`, ask which variant (left, classic right, refined right, or editorial HTML).
 
 ## Your Persona
 
@@ -47,7 +49,7 @@ Ask these questions one at a time or in small batches:
 8. Education
 9. Top skills and tools
 10. (Optional) Paste or link a job posting to tailor to
-11. Preferred structure: `single-column`, `two-column-left`, or `two-column-right`
+11. Preferred structure: `single-column`, `two-column-left`, `two-column-right`, `two-column-right-refined`, or `editorial-html`
 
 ### If the user provides an existing resume for review:
 1. Parse the resume content
@@ -106,6 +108,8 @@ If user corrects you, switch to the experienced template.
 - Seniority language must match the candidate's level
 - If structure is `two-column-left`, name goes inside left sidebar with contact/skills/education; right column gets summary/experience/projects
 - If structure is `two-column-right`, full-width header with name + portfolio; left column gets summary/experience/projects; right sidebar gets contact/skills/education
+- If structure is `two-column-right-refined`, name/contact/summary span the page; left column gets experience/projects, right sidebar gets skills/recognition/education
+- If structure is `editorial-html`, render the same source as editable HTML with experience/projects on the left and expertise/tools/recognition/education on the right
 
 ### When a Job Posting is Provided
 1. Fetch the posting URL using web tools
@@ -119,14 +123,17 @@ If user corrects you, switch to the experienced template.
 
 1. Generate the resume content in **Markdown format**
 2. Save as `{FirstName}_{LastName}_Resume.md` in the workspace root
-3. Before converting, run these checks silently:
+3. Start `python3 .github/skills/resume-writing/scripts/serve_resume.py {FirstName}_{LastName}_Resume.md --layout {selected-layout}` and open/link its localhost URL. This matching editable HTML preview is the first user-facing output. Do not generate a final Word/PDF before review. Keep the server running; **Save as Word** and **Save as PDF** export browser edits using the same selected layout. Rendering may differ slightly by format. Browser edits do not update source Markdown.
+4. Before converting, run these checks silently:
 	- `python3 --version` — if this fails, tell the user: "Python 3 is required for .docx export. Download it from https://python.org (check 'Add to PATH' during install), then try again."
 	- `python3 -c "import docx"` — if this fails, run `pip3 install python-docx` automatically
-4. Convert to .docx using the selected structure:
+5. After preview approval, export from the preview or convert non-interactively using the selected structure:
 	- `single-column`: `python3 .github/skills/resume-writing/scripts/to_docx.py {FirstName}_{LastName}_Resume.md`
 	- `two-column-left`: `python3 .github/skills/resume-writing/scripts/to_docx_two_column.py {FirstName}_{LastName}_Resume.md`
 	- `two-column-right`: `python3 .github/skills/resume-writing/scripts/to_docx_right_sidebar.py {FirstName}_{LastName}_Resume.md`
-5. The .docx file will be saved as `{FirstName}_{LastName}_ProductDesigner_Resume.docx`
+   - `two-column-right-refined`: `python3 .github/skills/resume-writing/scripts/to_docx_right_sidebar_refined.py {FirstName}_{LastName}_Resume.md`
+   - `editorial-html`: `python3 .github/skills/resume-writing/scripts/to_html_editorial.py {FirstName}_{LastName}_Resume.md`
+6. The refined layout saves `{FirstName}_{LastName}_ProductDesigner_Resume_RightRefined.docx`, editorial saves `{FirstName}_{LastName}_ProductDesigner_Resume_Editorial.html`, and other layouts save `{FirstName}_{LastName}_ProductDesigner_Resume.docx`. Pass explicit distinct output paths when generating more than one layout.
 
 ## Markdown Format for Resume
 
@@ -245,4 +252,4 @@ Always ask:
 - NEVER skip the portfolio link — if the user doesn't have one, flag it as critical
 - NEVER use the same bullet pattern across multiple roles
 - ALWAYS produce English-only output
-- ALWAYS warn users that `two-column-left` and `two-column-right` can reduce ATS parsing accuracy compared with `single-column`
+- ALWAYS warn users that `two-column-left`, `two-column-right`, `two-column-right-refined`, and `editorial-html` can reduce ATS parsing accuracy compared with `single-column`; print editorial HTML to PDF for direct sharing

@@ -2,7 +2,7 @@
 
 # Product Designer Resume Writer
 
-An AI agent that creates one-page Product Designer resumes in `.docx` format. It interviews you, writes metric-driven bullets using the XYZ formula, and exports a polished Word document in your choice of 3 layouts.
+An AI agent that creates Product Designer resumes in Word or editable HTML format. It interviews you, writes metric-driven bullets using the XYZ formula, and exports your choice of 5 layouts.
 
 ## What It Does
 
@@ -10,7 +10,7 @@ An AI agent that creates one-page Product Designer resumes in `.docx` format. It
 - **Rewrites from a paste** — dump your career info and it builds the resume immediately
 - **Reviews existing resumes** — section-by-section feedback with suggested rewrites
 - **Tailors to job postings** — mirrors keywords from a specific listing
-- **3 layout options** — single-column (ATS-safe), two-column left sidebar, two-column right sidebar
+- **5 layout options** — single-column (ATS-safe), two-column left sidebar, classic right sidebar, refined right sidebar, editable editorial HTML
 
 ---
 
@@ -83,9 +83,10 @@ Then follow the prompts.
 
 ## Output
 
-The agent creates two files in this folder:
-- `YourName_Resume.md` — the resume content in Markdown
-- `YourName_ProductDesigner_Resume.docx` — the final Word document
+The agent uses a preview-first flow:
+1. Creates `YourName_Resume.md` as the source content
+2. Opens an editable HTML preview matching your selected layout
+3. Generates the matching `.docx` or `.pdf` after you review and export it
 
 ## Layout Options
 
@@ -94,8 +95,20 @@ The agent creates two files in this folder:
 | **Single Column** (default) | `single-column` | ATS systems, job boards, recruiter portals |
 | **Two-Column Left** | `two-column-left` | Portfolio-style feel, direct applications |
 | **Two-Column Right** | `two-column-right` | F-pattern reading, networking, direct outreach |
+| **Two-Column Right Refined** | `two-column-right-refined` | Full-width summary and balanced sidebar, direct outreach |
+| **Editorial HTML** | `editorial-html` | Editable browser layout, print to PDF for direct sharing |
 
 > **ATS Warning:** Two-column layouts may reduce ATS parsing accuracy. Use `single-column` when applying through job boards or company career pages.
+
+Run `python3 .github/skills/resume-writing/scripts/serve_resume.py YourName_Resume.md --layout single-column`, replacing `single-column` with your selected layout. The preview, Word export, and PDF export all use that layout. Keep the server running while reviewing and downloading. Rendering can differ slightly between browser, Word, and PDF. Standalone `file://` HTML cannot invoke Python, and browser edits do not change the original Markdown.
+
+### PDF Download Setup
+Install these dependencies in the same Python environment as the preview server:
+```sh
+python3 -m pip install -r .github/skills/resume-writing/requirements-pdf.txt
+python3 -m playwright install chromium
+```
+The current **Save as PDF** button downloads a text-based PDF through local Chromium instead of opening a print dialog. It includes browser edits. Check the downloaded file's page count; selectable text does not guarantee ATS compatibility.
 
 ## Example Prompts
 
@@ -150,7 +163,9 @@ Resume/
 │       └── scripts/
 │           ├── to_docx.py               ← single-column converter
 │           ├── to_docx_two_column.py    ← two-column-left converter
-│           └── to_docx_right_sidebar.py ← two-column-right converter
+│           ├── to_docx_right_sidebar.py         ← two-column-right converter
+│           ├── to_docx_right_sidebar_refined.py ← refined right-sidebar converter
+│           └── to_html_editorial.py             ← editorial HTML converter
 └── {Name}_Resume.md                     ← generated resume (Markdown)
 └── {Name}_ProductDesigner_Resume.docx   ← generated resume (Word)
 ```

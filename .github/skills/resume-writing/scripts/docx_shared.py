@@ -150,17 +150,20 @@ def heading(cell, text: str, accent=ACCENT) -> None:
     rPr.append(sp)
 
 
-def sidebar_lines(cell, lines: List[str]) -> None:
+def sidebar_lines(cell, lines: List[str], *, bullets: bool = False) -> None:
     for raw in lines:
         line = raw.strip()
         if not line:
             continue
         bullet = re.match(r"^[\-*]\s+(.*)", line)
         if bullet:
-            p = cell.add_paragraph()
+            p = cell.add_paragraph(style="List Bullet" if bullets else None)
             p.paragraph_format.space_after = Pt(1)
             p.paragraph_format.space_before = Pt(0)
-            p.paragraph_format.left_indent = Inches(0.05)
+            p.paragraph_format.left_indent = Inches(0.15 if bullets else 0.05)
+            if bullets:
+                p.paragraph_format.first_line_indent = -Inches(0.1)
+                p.paragraph_format.tab_stops.add_tab_stop(Inches(0.15))
             fmt(p, bullet.group(1).strip(), size=Pt(8.5))
         elif line.startswith("### "):
             p = cell.add_paragraph()
@@ -193,6 +196,8 @@ def main_lines(cell, lines: List[str]) -> None:
             p.paragraph_format.space_after = Pt(1)
             p.paragraph_format.space_before = Pt(1)
             p.paragraph_format.left_indent = Inches(0.15)
+            p.paragraph_format.first_line_indent = -Inches(0.15)
+            p.paragraph_format.tab_stops.add_tab_stop(Inches(0.15))
             p.clear()
             fmt(p, content, size=Pt(9))
         else:

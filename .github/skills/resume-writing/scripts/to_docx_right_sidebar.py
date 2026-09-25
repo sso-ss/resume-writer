@@ -84,14 +84,14 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
     style.paragraph_format.space_after = Pt(0)
     style.paragraph_format.space_before = Pt(0)
 
-    # ── Full-width header: Name left, portfolio right ──
     header_table = doc.add_table(rows=1, cols=2)
     header_table.autofit = False
+    header_table.columns[0].width = Inches(4.5)
+    header_table.columns[1].width = Inches(2.7)
     left_h, right_h = header_table.rows[0].cells
     left_h.width = Inches(4.5)
     right_h.width = Inches(2.7)
 
-    # Name (left)
     p = left_h.paragraphs[0]
     p.paragraph_format.space_after = Pt(0)
     r = p.add_run(name or "Full Name")
@@ -100,7 +100,6 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
     r.font.color.rgb = TEXT_DARK
     r.font.name = FONT
 
-    # Portfolio + LinkedIn (right, top-aligned)
     p = right_h.paragraphs[0]
     p.alignment = WD_ALIGN_PARAGRAPH.RIGHT
     p.paragraph_format.space_before = Pt(6)
@@ -111,7 +110,7 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
             portfolio = value
         elif label.lower() == "linkedin":
             linkedin = value
-    links = [x for x in [portfolio, linkedin] if x]
+    links = [x for x in (portfolio, linkedin) if x]
     if links:
         r = p.add_run(" | ".join(links))
         r.font.size = Pt(8.5)
@@ -129,6 +128,8 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
     # ── Two-column body: main left, sidebar right ──
     table = doc.add_table(rows=1, cols=2)
     table.autofit = False
+    table.columns[0].width = MAIN_W
+    table.columns[1].width = SIDEBAR_W
     main, sidebar = table.rows[0].cells  # NOTE: main is LEFT, sidebar is RIGHT
     main.width = MAIN_W
     sidebar.width = SIDEBAR_W
@@ -137,11 +138,9 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
     set_cell_margins(sidebar, top=120, start=140, bottom=120, end=100)
     set_cell_margins(main, top=80, start=60, bottom=80, end=160)
 
-    # ── Right sidebar ──
-    # Contact (email + location only, portfolio/linkedin are in header)
     remaining_contact = [
-        (l, v) for l, v in contact_items
-        if l.lower() not in ("portfolio", "linkedin")
+        (label, value) for label, value in contact_items
+        if label.lower() not in ("portfolio", "linkedin")
     ]
     if remaining_contact:
         heading(sidebar, "Contact")
@@ -158,15 +157,12 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
             r.font.color.rgb = TEXT_DARK
             r.font.name = FONT
 
-    # Skills & Tools
     render_sidebar_skills(sidebar, sections)
 
-    # Education
     if "education" in sections:
         heading(sidebar, "Education")
         sidebar_lines(sidebar, sections["education"])
 
-    # ── Left main column ──
     render_main_content(main, sections)
 
     remove_table_borders(table)

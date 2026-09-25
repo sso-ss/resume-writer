@@ -86,6 +86,8 @@ def build_layout_b(md_path: str, docx_path: Optional[str] = None) -> str:
     # Full-width table, one row
     table = doc.add_table(rows=1, cols=2)
     table.autofit = False
+    table.columns[0].width = SIDEBAR_W
+    table.columns[1].width = MAIN_W
     sidebar, main = table.rows[0].cells
     sidebar.width = SIDEBAR_W
     main.width = MAIN_W
@@ -145,14 +147,6 @@ def build_layout_b(md_path: str, docx_path: Optional[str] = None) -> str:
 
     # Skills & Tools
     render_sidebar_skills(sidebar, sections)
-
-    # Separator
-    p = sidebar.add_paragraph()
-    p.paragraph_format.space_before = Pt(4)
-    p.paragraph_format.space_after = Pt(2)
-    r = p.add_run("─" * 18)
-    r.font.size = Pt(6)
-    r.font.color.rgb = TEXT_MUTED
 
     # Education
     if "education" in sections:

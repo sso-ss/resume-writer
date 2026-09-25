@@ -2,7 +2,7 @@
 
 # Product Designer 이력서 작성기
 
-AI 에이전트가 1페이지 Product Designer 이력서를 `.docx` 형식으로 만들어 드립니다. 인터뷰를 통해 정보를 수집하고, XYZ 공식으로 성과 중심 문장을 작성한 뒤, 3가지 레이아웃 중 선택하여 Word 문서로 내보냅니다.
+AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HTML 형식으로 만들어 드립니다. 인터뷰를 통해 정보를 수집하고, XYZ 공식으로 성과 중심 문장을 작성한 뒤, 5가지 레이아웃 중 선택하여 내보냅니다.
 
 ## 주요 기능
 
@@ -10,7 +10,7 @@ AI 에이전트가 1페이지 Product Designer 이력서를 `.docx` 형식으로
 - **기존 정보 붙여넣기** — 경력 정보를 붙여넣으면 바로 이력서 생성
 - **기존 이력서 리뷰** — 항목별 피드백과 수정안 제시
 - **채용공고 맞춤화** — 특정 채용공고의 키워드를 반영
-- **3가지 레이아웃** — 단일 컬럼(ATS 호환), 2단 좌측 사이드바, 2단 우측 사이드바
+- **5가지 레이아웃** — 단일 컬럼(ATS 호환), 2단 좌측 사이드바, 2단 우측 사이드바, 개선된 2단 우측 사이드바, 편집 가능한 HTML
 
 ---
 
@@ -83,9 +83,10 @@ AI 에이전트가 1페이지 Product Designer 이력서를 `.docx` 형식으로
 
 ## 결과물
 
-에이전트가 이 폴더에 두 개의 파일을 생성합니다:
-- `이름_Resume.md` — Markdown 형식의 이력서 내용
-- `이름_ProductDesigner_Resume.docx` — 최종 Word 문서
+에이전트는 미리보기 우선 순서로 진행합니다:
+1. 원본 콘텐츠인 `이름_Resume.md` 생성
+2. 선택한 레이아웃과 일치하는 편집 가능한 HTML 미리보기 열기
+3. 검토 후 같은 레이아웃의 `.docx` 또는 `.pdf` 내보내기
 
 ## 레이아웃 옵션
 
@@ -94,8 +95,12 @@ AI 에이전트가 1페이지 Product Designer 이력서를 `.docx` 형식으로
 | **단일 컬럼** (기본값) | `single-column` | ATS 시스템, 채용 사이트, 리크루터 포탈 |
 | **2단 좌측** | `two-column-left` | 포트폴리오 스타일, 직접 지원 |
 | **2단 우측** | `two-column-right` | F패턴 읽기, 네트워킹, 직접 전달 |
+| **개선된 2단 우측** | `two-column-right-refined` | 전체 너비 요약 및 균형 잡힌 사이드바, 직접 전달 |
+| **에디토리얼 HTML** | `editorial-html` | 브라우저에서 편집 후 PDF로 인쇄하여 직접 전달 |
 
 > **ATS 주의사항:** 2단 레이아웃은 ATS 파싱 정확도가 떨어질 수 있습니다. 채용 사이트나 회사 채용 페이지를 통해 지원할 때는 `single-column`을 사용하세요.
+
+`python3 .github/skills/resume-writing/scripts/serve_resume.py 이름_Resume.md --layout single-column`을 실행하고 `single-column`을 선택한 레이아웃으로 바꾸세요. HTML 미리보기, Word, PDF는 같은 레이아웃을 사용합니다. 검토와 다운로드 중에는 서버를 실행 상태로 유지하세요. 브라우저, Word, PDF 렌더링은 조금 다를 수 있습니다. `file://` HTML은 Python 내보내기를 실행할 수 없고, 브라우저 수정 내용은 원본 Markdown에 자동 반영되지 않습니다.
 
 ## 프롬프트 예시
 
@@ -150,7 +155,9 @@ Resume/
 │       └── scripts/
 │           ├── to_docx.py               ← 단일 컬럼 변환기
 │           ├── to_docx_two_column.py    ← 2단 좌측 변환기
-│           └── to_docx_right_sidebar.py ← 2단 우측 변환기
+│           ├── to_docx_right_sidebar.py         ← 2단 우측 변환기
+│           ├── to_docx_right_sidebar_refined.py ← 개선된 2단 우측 변환기
+│           └── to_html_editorial.py             ← 에디토리얼 HTML 변환기
 └── {이름}_Resume.md                     ← 생성된 이력서 (Markdown)
 └── {이름}_ProductDesigner_Resume.docx   ← 생성된 이력서 (Word)
 ```

@@ -30,7 +30,7 @@ Ask these questions in order (use structured questions when possible):
 9. **Skills:** Your strongest design skills, research skills, and soft skills
 10. **Tools:** Design and collaboration tools you use daily
 11. **Job posting:** (Optional) Paste or link a job posting to tailor the resume
-12. **Structure choice:** `single-column` (ATS-safe default), `two-column-left` (sidebar left, designer feel), or `two-column-right` (full-width header, F-pattern)
+12. **Structure choice:** `single-column` (ATS-safe default), `two-column-left` (sidebar left), `two-column-right` (classic right sidebar), `two-column-right-refined` (full-width summary and balanced right sidebar), or `editorial-html` (editable HTML with print-to-PDF)
 
 ### Path B: Paste-and-Go
 Triggered when the user provides raw career information (even if messy or unstructured).
@@ -38,7 +38,7 @@ Triggered when the user provides raw career information (even if messy or unstru
 1. Parse the provided information and identify all resume sections
 2. Detect if new grad (see new-grad detection signals in Step 2 below)
 3. Ask only for critical missing information (name, portfolio link, target role level)
-4. Ask for structure choice: `single-column`, `two-column-left`, or `two-column-right`
+4. Ask for structure choice: `single-column`, `two-column-left`, `two-column-right`, `two-column-right-refined`, or `editorial-html`
 5. Proceed directly to generating the resume
 
 ### Path C: Review Mode
@@ -85,6 +85,7 @@ When new-grad mode is detected, confirm with the user:
 
 ### Step 3: Write Content (Markdown)
 Generate the resume content in Markdown format following the guidelines strictly.
+For fictional demo resumes, use clearly fictional company and product names instead of Microsoft or other real employers. Preserve real company names when writing from a candidate's actual experience.
 
 **Experienced designer (1+ years):**
 - Name + Contact (portfolio link first)
@@ -115,28 +116,46 @@ If a job posting URL was provided:
 ### Step 5: Save as Markdown
 Save the resume as `{FirstName}_{LastName}_Resume.md` in the workspace.
 
-### Step 6: Convert to .docx
+### Step 6: Generate the editable HTML review first
+Start `python3 .github/skills/resume-writing/scripts/serve_resume.py {FirstName}_{LastName}_Resume.md --layout {selected-layout}` as a long-running local server, then open and link the localhost URL. The first user-facing artifact must be this editable HTML preview, and it must use the layout the user selected. Do not pre-generate or present Word/PDF as final before review. Keep the server running while the user reviews and downloads. **Save as Word** and **Save as PDF** use the same selected layout and include browser edits. Word needs the layout fonts installed for the closest match; line wrapping can vary by renderer. A standalone `file://` HTML cannot run Python exports. Browser edits do not update the source Markdown; incorporate approved changes there when they should become source content. Do not claim a one-page export without checking the actual file.
+
+#### PDF Downloads
+**Save as PDF** uses the local server's Playwright Chromium renderer to download a text-based PDF with browser edits. Do not use the integrated browser's print dialog, which can produce an image-only PDF. Install these dependencies in the same Python environment as the server:
+```sh
+python3 -m pip install -r .github/skills/resume-writing/requirements-pdf.txt
+python3 -m playwright install chromium
+```
+Check the actual PDF's extractable text and page count before delivery. Selectable text does not guarantee ATS compatibility.
+
+### Step 6.1: Export after preview approval
 Before running any script, check dependencies silently:
 - `python3 --version` — if this fails, tell the user: "Python 3 is required for .docx export. Download it from https://python.org (check 'Add to PATH' during install), then try again."
 - `python3 -c "import docx"` — if this fails, run `pip3 install python-docx` automatically
 
-Run the conversion script based on structure choice:
+Use the preview's export buttons after approval. For non-interactive regeneration, run the conversion script based on structure choice:
 - Single-column: [to_docx.py](./scripts/to_docx.py)
 - Two-column-left (Layout B): [to_docx_two_column.py](./scripts/to_docx_two_column.py)
 - Two-column-right (Layout C): [to_docx_right_sidebar.py](./scripts/to_docx_right_sidebar.py)
+- Two-column-right-refined: [to_docx_right_sidebar_refined.py](./scripts/to_docx_right_sidebar_refined.py)
+- Editorial HTML preview: [to_html_editorial.py](./scripts/to_html_editorial.py)
+- Editorial Word: [to_docx_editorial.py](./scripts/to_docx_editorial.py)
 
 Usage:
 - `python3 .github/skills/resume-writing/scripts/to_docx.py {FirstName}_{LastName}_Resume.md`
 - `python3 .github/skills/resume-writing/scripts/to_docx_two_column.py {FirstName}_{LastName}_Resume.md`
 - `python3 .github/skills/resume-writing/scripts/to_docx_right_sidebar.py {FirstName}_{LastName}_Resume.md`
+- `python3 .github/skills/resume-writing/scripts/to_docx_right_sidebar_refined.py {FirstName}_{LastName}_Resume.md`
+- `python3 .github/skills/resume-writing/scripts/to_html_editorial.py {FirstName}_{LastName}_Resume.md`
+- `python3 .github/skills/resume-writing/scripts/to_docx_editorial.py {FirstName}_{LastName}_Resume.md`
 
-This produces `{FirstName}_{LastName}_ProductDesigner_Resume.docx` in the same directory.
+The refined layout produces `{FirstName}_{LastName}_ProductDesigner_Resume_RightRefined.docx`; the editorial scripts produce `{FirstName}_{LastName}_ProductDesigner_Resume_Editorial.html` and `{FirstName}_{LastName}_ProductDesigner_Resume_Editorial.docx`; the other layouts produce `{FirstName}_{LastName}_ProductDesigner_Resume.docx` in the same directory. When generating multiple layouts together, pass a distinct output path as the second script argument for each so files do not overwrite each other.
 
-### Step 6.1: ATS Warning (required for two-column)
-If the user selects `two-column-left` or `two-column-right`, explicitly warn:
+### Step 6.2: ATS Warning (required for two-column)
+If the user selects `two-column-left`, `two-column-right`, `two-column-right-refined`, or `editorial-html`, explicitly warn:
 - Some ATS systems parse two-column resumes less reliably
 - Recommend keeping a single-column version for applications
 - Suggest using two-column version mainly for networking, direct recruiter outreach, or portfolio downloads
+- For `editorial-html`, use the editable preview's PDF or Word download for direct sharing; keep the single-column Word version for ATS uploads.
 
 ### Step 7: Review
 Present the resume to the user and ask:

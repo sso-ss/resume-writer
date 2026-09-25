@@ -25,7 +25,7 @@ except ImportError:
     sys.exit(1)
 
 
-def create_resume_doc(md_path: str, docx_path: Optional[str] = None) -> str:
+def create_resume_doc(md_path: str, docx_path: Optional[str] = None, hybrid: bool = False) -> str:
     """Parse a Markdown resume and produce a formatted .docx file."""
     md_file = Path(md_path)
     if not md_file.exists():
@@ -65,11 +65,11 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None) -> str:
         if line.startswith("# "):
             name = line[2:].strip()
             p = doc.add_paragraph()
-            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT if hybrid else WD_ALIGN_PARAGRAPH.CENTER
             p.paragraph_format.space_after = Pt(2)
             run = p.add_run(name)
             run.bold = True
-            run.font.size = Pt(18)
+            run.font.size = Pt(20) if hybrid else Pt(18)
             run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
             i += 1
             continue
@@ -86,7 +86,7 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None) -> str:
             )
         ):
             p = doc.add_paragraph()
-            p.alignment = WD_ALIGN_PARAGRAPH.CENTER
+            p.alignment = WD_ALIGN_PARAGRAPH.LEFT if hybrid else WD_ALIGN_PARAGRAPH.CENTER
             p.paragraph_format.space_after = Pt(6)
             _add_formatted_run(p, line.strip(), size=Pt(9), color=RGBColor(0x55, 0x55, 0x55))
             i += 1
@@ -101,7 +101,7 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None) -> str:
             run = p.add_run(heading_text.upper())
             run.bold = True
             run.font.size = Pt(10)
-            run.font.color.rgb = RGBColor(0x1A, 0x1A, 0x1A)
+            run.font.color.rgb = RGBColor(0x2B, 0x4C, 0x5E) if hybrid else RGBColor(0x1A, 0x1A, 0x1A)
             # Add a bottom border (thin line)
             _add_bottom_border(p)
             i += 1
@@ -113,7 +113,12 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None) -> str:
             p = doc.add_paragraph()
             p.paragraph_format.space_before = Pt(6)
             p.paragraph_format.space_after = Pt(2)
-            _add_formatted_run(p, sub_text, size=Pt(10), bold=True, color=RGBColor(0x1A, 0x1A, 0x1A))
+            if hybrid and " | " in sub_text:
+                role, date = sub_text.rsplit(" | ", 1)
+                _add_formatted_run(p, role, size=Pt(10), bold=True, color=RGBColor(0x1A, 0x1A, 0x1A))
+                _add_formatted_run(p, "  |  " + date, size=Pt(9), color=RGBColor(0x55, 0x55, 0x55))
+            else:
+                _add_formatted_run(p, sub_text, size=Pt(10), bold=True, color=RGBColor(0x1A, 0x1A, 0x1A))
             i += 1
             continue
 
@@ -193,5 +198,6 @@ if __name__ == "__main__":
 
     input_path = sys.argv[1]
     output_path = sys.argv[2] if len(sys.argv) > 2 else None
-    result = create_resume_doc(input_path, output_path)
+    hybrid = "--hybrid" in sys.argv[3:]
+    result = create_resume_doc(input_path, output_path, hybrid=hybrid)
     print(f"Resume saved to: {result}")

@@ -14,9 +14,11 @@ Always let the user choose one structure before final output:
 1. `single-column` (default) — ATS-safe and recruiter-friendly
 2. `two-column-left` — name anchored in left sidebar, narrative on right. Designer portfolio feel
 3. `two-column-right` — full-width header, main content left, metadata sidebar right. F-pattern reading
+4. `two-column-right-refined` — full-width name, contact and summary; experience left, skills/recognition/education right
+5. `editorial-html` — editable editorial layout with a right rail; print from browser to PDF
 
 If user does not choose, default to `single-column` and mention why.
-If user says just `two-column`, ask which variant (left or right sidebar).
+If user says just `two-column`, ask which variant (left, classic right, refined right, or editorial HTML).
 
 ## Your Persona
 
@@ -42,13 +44,13 @@ Ask these questions one at a time or in small batches:
 8. Education
 9. Top skills and tools
 10. (Optional) Paste or link a job posting to tailor to
-11. Preferred structure: `single-column`, `two-column-left`, or `two-column-right`
+11. Preferred structure: `single-column`, `two-column-left`, `two-column-right`, `two-column-right-refined`, or `editorial-html`
 
 ### Path B: If the user provides raw career information (paste-and-go):
 1. Parse what they gave you
 2. Detect if new grad (see detection signals below)
 3. Ask only for critical missing pieces (name, portfolio URL, target role level)
-4. Ask for structure choice: `single-column`, `two-column-left`, or `two-column-right`
+4. Ask for structure choice: `single-column`, `two-column-left`, `two-column-right`, `two-column-right-refined`, or `editorial-html`
 5. Proceed directly to resume generation
 
 ### Path C: If the user provides an existing resume for review:
@@ -120,14 +122,17 @@ If user corrects you, switch to the experienced template.
 
 1. Generate the resume content in **Markdown format**
 2. Save as `{FirstName}_{LastName}_Resume.md` in the workspace root
-3. Before converting, run these checks silently:
+3. After checking the Python dependencies below, start `python3 .github/skills/resume-writing/scripts/serve_resume.py {FirstName}_{LastName}_Resume.md` and open/link its localhost URL as the editable review page. Keep the server running. **Save as Word** calls the existing Python refined right-sidebar generator with the browser edits and downloads `.docx`; **Save as PDF** prints the HTML. Do not substitute RTF or claim `file://` can run Python. Browser edits do not update source Markdown, and the Word layout is not pixel-identical to HTML.
+4. Before converting, run these checks silently:
 	- `python3 --version` — if this fails, tell the user: "Python 3 is required for .docx export. Download it from https://python.org (check 'Add to PATH' during install), then try again."
 	- `python3 -c "import docx"` — if this fails, run `pip3 install python-docx` automatically
-4. Convert to .docx using the selected structure:
+5. Convert to .docx using the selected structure:
 	- `single-column`: `python3 .github/skills/resume-writing/scripts/to_docx.py {FirstName}_{LastName}_Resume.md`
 	- `two-column-left`: `python3 .github/skills/resume-writing/scripts/to_docx_two_column.py {FirstName}_{LastName}_Resume.md`
 	- `two-column-right`: `python3 .github/skills/resume-writing/scripts/to_docx_right_sidebar.py {FirstName}_{LastName}_Resume.md`
-5. The .docx file will be saved as `{FirstName}_{LastName}_ProductDesigner_Resume.docx`
+   - `two-column-right-refined`: `python3 .github/skills/resume-writing/scripts/to_docx_right_sidebar_refined.py {FirstName}_{LastName}_Resume.md`
+   - `editorial-html`: `python3 .github/skills/resume-writing/scripts/to_html_editorial.py {FirstName}_{LastName}_Resume.md`
+6. The refined layout saves `{FirstName}_{LastName}_ProductDesigner_Resume_RightRefined.docx`, editorial saves `{FirstName}_{LastName}_ProductDesigner_Resume_Editorial.html`, and other layouts save `{FirstName}_{LastName}_ProductDesigner_Resume.docx`. Pass explicit distinct output paths when generating more than one layout.
 
 ## Markdown Format for Resume
 
@@ -247,4 +252,4 @@ Always ask:
 - NEVER use the same bullet pattern across multiple roles
 - ALWAYS produce resume content in English only
 - Respond in the user's language during conversation (interview questions, feedback, explanations), but all resume text (summary, bullets, skills, etc.) must remain in English
-- ALWAYS warn users that `two-column-left` and `two-column-right` can reduce ATS parsing accuracy compared with `single-column`
+- ALWAYS warn users that `two-column-left`, `two-column-right`, `two-column-right-refined`, and `editorial-html` can reduce ATS parsing accuracy compared with `single-column`; print editorial HTML to PDF for direct sharing
