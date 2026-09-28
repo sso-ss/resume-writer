@@ -7,23 +7,29 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
     * { box-sizing: border-box; }
-    body { --accent: #466454; --accent-ink: #fff; margin: 0; background: color-mix(in srgb, var(--accent) 14%, #f7f7f7); color: #232924; font: 10pt/1.45 'DM Sans', Arial, sans-serif; }
+    body { --accent: #466454; --accent-ink: #fff; margin: 0; background: #f7f7f7; color: #121212; font: 14px/1.6 Arial, Helvetica, sans-serif; }
     body:not([data-layout="editorial-html"]) { --accent: #2b4c5e; }
     body[data-layout="single-column"] { --accent: #1a1a1a; }
     body:not([data-layout="editorial-html"]) .page { font-family: Arial, sans-serif; color: #333; }
-    .toolbar { max-width: 816px; margin: 24px auto 16px; display: flex; justify-content: space-between; align-items: center; gap: 20px; font-size: 13px; color: #535d56; }
-    .toolbar p { margin: 0; }
-    .actions { display: flex; gap: 8px; flex-wrap: wrap; }
-    .layout-picker { display: flex; align-items: center; gap: 8px; }
-    .layout-picker select { border: 1px solid #a4b5a9; border-radius: 6px; background: white; color: #244a3b; padding: 10px 30px 10px 10px; font: 600 13px 'DM Sans', Arial, sans-serif; }
-    .layout-picker select:focus-visible { outline: 2px solid #244a3b; outline-offset: 3px; }
-    .color-picker { display: flex; align-items: center; gap: 7px; }
-    .color-picker input { width: 36px; height: 36px; padding: 3px; border: 1px solid #a4b5a9; border-radius: 4px; background: white; cursor: pointer; }
-    button { border: 0; border-radius: 6px; background: var(--accent); color: var(--accent-ink); padding: 11px 18px; font: 600 13px 'DM Sans', Arial, sans-serif; cursor: pointer; white-space: nowrap; }
-    button:hover { background: color-mix(in srgb, var(--accent) 82%, black); }
-    button:disabled { opacity: .6; cursor: wait; }
-    button:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
-    .page { width: 816px; min-height: 1056px; background: #fff; margin: 0 auto 32px; padding: 46px 54px 40px; box-shadow: 0 12px 45px #16251b12; }
+    .preview-nav { display: flex; align-items: center; min-height: 76px; padding: 18px 32px; background: #fff; border-bottom: 1px solid #e6e6e6; }
+    .preview-brand { display: flex; align-items: center; gap: 9px; font-size: 21px; font-weight: 800; letter-spacing: -1px; }
+    .preview-brand svg { width: 30px; height: 34px; padding: 7px; border-radius: 8px; background: #121212; color: white; }
+    .preview-intro { max-width: 816px; margin: 32px auto 20px; }
+    .preview-intro h2 { margin: 0 0 5px; color: #121212; font: 600 26px/1.2 Arial, Helvetica, sans-serif; letter-spacing: -.8px; text-transform: none; }
+    .preview-intro p { margin: 0; color: #686868; font-size: 13px; }
+    .toolbar { max-width: 816px; margin: 0 auto 24px; padding: 16px 18px; background: white; border: 1px solid #e6e6e6; border-radius: 16px; display: flex; justify-content: space-between; align-items: center; gap: 16px; font-size: 12px; color: #121212; }
+    .actions { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+    .layout-picker, .color-picker { display: flex; align-items: center; gap: 9px; font-weight: 600; }
+    .layout-picker select { max-width: 100%; border: 1px solid #dedede; border-radius: 8px; background: #fff; color: #121212; padding: 10px 30px 10px 11px; font: 13px Arial, Helvetica, sans-serif; cursor: pointer; }
+    .color-picker { margin-right: 7px; }
+    .color-picker input { width: 36px; height: 36px; padding: 3px; border: 1px solid #dedede; border-radius: 8px; background: white; cursor: pointer; }
+    .toolbar button { border: 1px solid #121212; border-radius: 30px; background: #121212; color: #fff; padding: 10px 17px; font: 600 12px Arial, Helvetica, sans-serif; cursor: pointer; white-space: nowrap; }
+    .toolbar button:hover { background: #333; border-color: #333; }
+    .toolbar #save-pdf { background: white; border-color: #dedede; color: #121212; }
+    .toolbar #save-pdf:hover { background: #f2f2f2; }
+    .toolbar button:disabled { opacity: .5; cursor: wait; }
+    .toolbar :focus-visible { outline: 3px solid #658e1c; outline-offset: 3px; }
+    .page { width: 816px; min-height: 1056px; font: 10pt/1.45 'DM Sans', Arial, sans-serif; color: #232924; background: #fff; margin: 0 auto 32px; padding: 46px 54px 40px; box-shadow: 0 5px 20px #00000005; }
     .eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin: 0 0 9px; }
     h1 { font: 800 39px/1.1 Manrope, Arial, sans-serif; letter-spacing: -1px; margin: 0; color: #1d2821; }
     body:not([data-layout="editorial-html"]) h1 { font: 700 29px/1.15 Arial, sans-serif; color: #1a1a1a; letter-spacing: 0; }
@@ -81,8 +87,11 @@
     body[data-layout="two-column-right-refined"] .job-header { display: block; }
     body[data-layout="two-column-right-refined"] .job-header .meta { display: block; margin: 2px 0 6px; }
     [contenteditable]:focus { outline: 2px solid #a5bba8; outline-offset: 7px; border-radius: 1px; }
+    @media screen { .page { outline: 1px solid #e6e6e6; border-radius: 16px; } }
     @media (max-width: 850px) {
-      .toolbar { margin: 18px; padding: 0 8px; }
+      .preview-intro { margin: 26px 20px 18px; }
+      .toolbar { margin: 0 20px 24px; flex-wrap: wrap; }
+      .preview-nav { padding: 16px 20px; }
       .page { width: 100%; min-height: 0; padding: 36px 30px; }
       .layout { grid-template-columns: minmax(0, 1fr) 160px; gap: 24px; }
       h1 { font-size: 35px; }
@@ -90,7 +99,12 @@
     @media (max-width: 560px) {
       .layout { grid-template-columns: 1fr; }
       .sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-      .toolbar { align-items: flex-start; flex-direction: column; }
+      .toolbar { align-items: stretch; flex-direction: column; padding: 16px; }
+      .layout-picker { justify-content: space-between; }
+      .actions { gap: 10px; }
+      .color-picker { width: 100%; justify-content: space-between; margin: 0 0 4px; }
+      .actions button { flex: 1; }
+      .preview-brand { font-size: 18px; }
       body[data-layout="single-column"] .page { padding: 36px 30px; }
       body[data-layout="two-column-right-refined"] .page { padding: 36px 30px; }
       body[data-layout="two-column-right-refined"] .layout { grid-template-columns: 1fr; }
@@ -106,7 +120,7 @@
     @page { size: Letter; margin: 0; }
     @media print {
       body { background: white; }
-      .toolbar { display: none !important; }
+      .preview-nav, .preview-intro, .toolbar { display: none !important; }
       .page { margin: 0; box-shadow: none; width: 8.5in; min-height: 0; padding: .4in .56in .34in; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
       body[data-layout="two-column-left"] .page { padding: .4in .35in; }
       body[data-layout="two-column-left"] .sidebar { margin: 0; padding: 10px 10px 10px 14px; background: #f0efeb; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
@@ -127,7 +141,9 @@
   </style>
 </head>
 <body data-layout="$layout">
-  <div class="toolbar"><label class="layout-picker" for="preview-layout">Template <select id="preview-layout"><option value="single-column">Single Column</option><option value="two-column-left">Left Sidebar</option><option value="two-column-right">Right Sidebar</option><option value="two-column-right-refined">Refined Right Sidebar</option><option value="editorial-html">Editorial</option></select></label><div class="actions"><label class="color-picker" for="accent-color">Accent <input id="accent-color" type="color" value="#466454" title="Resume accent color"></label><button type="button" id="save-pdf" title="Download PDF with selectable text">Save as PDF</button><button type="button" id="save-word" title="Download .docx using the selected Python Word generator">Save as Word</button></div></div>
+  <div class="preview-nav" role="banner"><div class="preview-brand"><svg viewBox="0 0 17 21" fill="none" aria-hidden="true"><path d="M3 1.5h7l4 4v14H3zM10 1.5v4h4M5.5 10h6M5.5 13h6M5.5 16h4" stroke="currentColor" stroke-width="1.2"/></svg>Resume Preview</div></div>
+  <div class="preview-intro"><h2>Edit your resume.</h2><p>Click any text to edit. Choose a layout, then download your resume.</p></div>
+  <div class="toolbar"><label class="layout-picker" for="preview-layout">Template <select id="preview-layout"><option value="single-column">Single Column</option><option value="two-column-left">Left Sidebar</option><option value="two-column-right">Right Sidebar</option><option value="two-column-right-refined">Refined Right Sidebar</option><option value="editorial-html">Editorial</option></select></label><div class="actions"><label class="color-picker" for="accent-color">Accent <input id="accent-color" type="color" value="#466454" title="Resume accent color"></label><button type="button" id="save-pdf" title="Download PDF with selectable text">Save as PDF</button><button type="button" id="save-word" title="Download Word with your edits and selected layout">Save as Word</button></div></div>
   <main class="page" contenteditable="true" spellcheck="false" aria-label="Editable product designer resume">
     $page_content
   </main>

@@ -4,6 +4,17 @@
 
 AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HTML 형식으로 만들어 드립니다. 인터뷰를 통해 정보를 수집하고, 본인의 기여, 디자인 판단, 확인 가능한 근거를 바탕으로 성과를 작성한 뒤, 5가지 레이아웃 중 선택하여 내보냅니다.
 
+## 등록된 스킬
+
+이력서 작성과 리뷰 스킬을 Codex (`.agents/skills`), Claude Code (`.claude/skills`), Cursor (`.cursor/skills`)에 모두 등록했습니다. Copilot은 `.github/skills`의 공통 스킬과 기존 `resume-writer` 에이전트를 사용합니다.
+
+| 기능 | Codex | Claude Code |
+| --- | --- | --- |
+| 이력서 작성·맞춤 수정 | `$resume-writing` | `/resume-writing` |
+| 리뷰 업로드 화면 열기 | `$resume-review` | `/resume-review` |
+
+기존 Claude `/resume-writer` 명령도 유지됩니다. 새 스킬이 보이지 않으면 새 세션을 시작하세요. Cursor/Copilot에서는 스킬을 선택하거나 자연어로 요청할 수 있습니다. 스킬 등록과 AI 연결은 별개이며, 업로드 화면은 Codex, Claude Code, Cursor Agent CLI, GitHub Copilot CLI를 지원합니다. 선택한 CLI의 설치와 로그인이 필요합니다.
+
 ## 주요 기능
 
 - **처음부터 이력서 작성** — 몇 가지 질문에 답하면 완성된 `.docx` 파일 제공
@@ -112,9 +123,23 @@ AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HT
 
 > **ATS 주의사항:** 2단 레이아웃은 ATS 파싱 정확도가 떨어질 수 있습니다. 채용 사이트나 회사 채용 페이지를 통해 지원할 때는 `single-column`을 사용하세요.
 
-`python3 .github/skills/resume-writing/scripts/serve_resume.py 이름_Resume.md --layout single-column`을 실행하고 `single-column`을 초기 레이아웃으로 바꾸세요. 미리보기의 Template 메뉴에서 레이아웃을 비교하고 Accent 색상 선택기로 제목과 링크 색상을 바꿀 수 있습니다. Word와 PDF에는 현재 레이아웃, 선택한 강조색, 브라우저 수정 내용이 적용됩니다. 사이드바의 중립 배경색은 유지됩니다. 검토와 다운로드 중에는 서버를 실행 상태로 유지하세요. 브라우저, Word, PDF 렌더링은 조금 다를 수 있습니다. `file://` HTML은 Python 내보내기를 실행할 수 없고, 브라우저 수정 내용은 원본 Markdown에 자동 반영되지 않습니다.
+`python3 .github/skills/resume-writing/scripts/serve_resume.py 이름_Resume.md --layout single-column`을 실행하고 `single-column`을 초기 레이아웃으로 바꾸세요. 미리보기의 Template 메뉴에서 레이아웃을 비교하고 Accent 색상 선택기로 제목과 링크 색상을 바꿀 수 있습니다. Word와 PDF에는 현재 레이아웃, 선택한 강조색, 브라우저 수정 내용이 적용됩니다. 사이드바의 중립 배경색은 유지됩니다. 생성된 미리보기는 리뷰 앱과 동일한 흰색·연회색 화면, 검은색 버튼, 절제된 라임색 강조를 기본으로 사용합니다. Accent 선택은 이력서에 적용되며 미리보기 조작부의 기본 스타일은 유지됩니다. 검토와 다운로드 중에는 서버를 실행 상태로 유지하세요. 브라우저, Word, PDF 렌더링은 조금 다를 수 있습니다. `file://` HTML은 Python 내보내기를 실행할 수 없고, 브라우저 수정 내용은 원본 Markdown에 자동 반영되지 않습니다.
 
 이력서 리뷰는 편집 가능한 내보내기 미리보기와 별도입니다. Markdown 또는 Word 이력서와 타겟 채용공고 URL이나 전체 채용공고 내용을 제공해야 하며, 채용공고가 없으면 에이전트가 리뷰 전에 요청합니다. 주요 요구사항을 추출해 강한 매칭, 부분 매칭, 이력서에서 확인되지 않는 항목을 보여주는 HTML 페이지가 열립니다. 모든 매칭은 이력서의 정확한 근거 문장에 연결되며, 모든 경력 및 프로젝트 bullet은 해당 역할에 맞춰 주도성, 범위, 방법, 결과, 근거, 명확성을 평가받습니다. 같은 이력서에 다른 URL이나 채용공고 내용을 제공하면 매칭 분석을 새로 생성할 수 있습니다. 이는 정성적 리뷰이며 ATS 인증이나 숫자 기반 적합도 점수가 아닙니다.
+
+## 브라우저에서 리뷰 시작하기
+
+```sh
+python3 .github/skills/resume-review/scripts/render_review.py
+```
+
+파일 인수 없이 실행하면 시작 화면의 로컬 URL이 표시됩니다. `.docx` 또는 `.md` 이력서(최대 5 MB)를 끌어 놓거나 파일 선택으로 추가한 뒤, 채용공고 URL이나 전체 내용을 입력하세요. **Review my resume**를 누르면 타겟 직무에 맞춘 리뷰 스킬을 읽어 분석하고, 근거 문장과 bullet 누락 여부를 검증한 후 리뷰를 자동으로 엽니다. 진행 상태, 오류 후 재시도, 새로고침 후 진행 중인 리뷰 재연결을 지원합니다. **Change job**은 같은 이력서를 새 공고로 다시 분석합니다.
+
+리뷰는 다양한 직무를 지원하며, 포트폴리오, 디자인 방법, 자격증은 해당 직무와 관련될 때만 평가합니다. 별도의 이력서 작성 워크플로는 계속 프로덕트 디자이너에 맞춰져 있습니다.
+
+분석 시에는 스킬의 공통 평가 기준만 읽고 채팅용 파일 저장·화면 열기 지침은 제외합니다. 앱이 이력서 블록에 ID를 부여하고 분석 결과의 ID를 원문으로 복원하여 반복 텍스트를 줄입니다. 모든 경력·프로젝트 불릿과 근거 검증은 유지하며 기존 리뷰도 계속 열 수 있습니다. 업로드 폴더의 `metrics.json`에 처리 시간, 시도 횟수, 입출력 글자 수를 저장합니다. 글자 수는 토큰 사용량이 아니며 처리 시간은 문서, 공고 접근, 모델에 따라 달라집니다.
+
+자동 분석에는 `python-docx`가 설치된 Python과 로그인된 Codex CLI, Claude Code, Cursor Agent CLI 또는 GitHub Copilot CLI가 필요합니다. 선택한 CLI에 설정된 모델과 계정을 사용하며 일반 사용량 제한이 적용됩니다. 이력서 텍스트와 채용공고는 선택한 AI 서비스로 전송됩니다. 업로드와 결과는 Git에서 제외된 `output/reviews/uploads/`에 보관되며 직접 삭제할 때까지 유지됩니다. 서버를 실행 상태로 유지하세요. 한 번에 하나의 리뷰를 분석합니다. 공고 URL을 읽을 수 없다면 전체 내용을 붙여넣으세요. 기존 파일 추출 및 리뷰 렌더링 명령도 계속 사용할 수 있습니다.
 
 ## 프롬프트 예시
 
@@ -178,3 +203,9 @@ Resume/
 └── {이름}_Resume.md                     ← 생성된 이력서 (Markdown)
 └── {이름}_ProductDesigner_Resume.docx   ← 생성된 이력서 (Word)
 ```
+
+### 리뷰 스킬 실행과 AI 선택
+
+Codex에서는 `$resume-review`, Claude Code에서는 `/resume-review`로 기존 업로드 화면을 엽니다. 스킬이 해당 도구를 선택해 서버를 시작합니다. 새 스킬이 보이지 않으면 새 세션을 시작하세요. 직접 실행할 때는 `render_review.py --provider codex --open` 또는 `--provider claude --open`을 사용합니다. 도구를 확인할 수 없으면 화면에서 선택합니다. 설치 여부와 로그인 여부는 다르며, 계정 접근은 리뷰 시작 시 확인합니다. **Change job**은 원래 선택한 AI를 유지합니다.
+
+각 리뷰는 별도의 분석 세션이므로 원래 대화나 일회성 모델 설정을 그대로 상속하지 않습니다. Cursor는 `--provider cursor`, Copilot은 `--provider copilot`으로 해당 CLI와 계정을 사용합니다. 에디터 로그인과 CLI 로그인은 다를 수 있습니다. [연결 설정 안내](.github/skills/resume-review/references/provider-setup.md)를 참고하세요.

@@ -31,12 +31,9 @@ If user says just `two-column`, ask which variant (left, classic right, refined 
 
 For writing, rewriting, or tailoring, load `.github/skills/resume-writing/SKILL.md` and follow its interview or paste-and-go path. Gather the target role/posting early, parse supplied evidence, and ask only material missing questions. Establish personal ownership, design decisions/constraints, outcomes, and how results were evaluated. Ask about relevant design, research, collaboration/leadership, and AI use with validation; never assume these capabilities.
 
-### If the user provides an existing resume for review:
-1. Load and follow `.github/skills/resume-review/SKILL.md`.
-2. If the user did not provide a job URL or pasted job description, ask for one and stop. Never invent a posting or infer employer requirements from a role title.
-3. Compare the supplied posting requirements with exact resume evidence and generate the annotated HTML review before summarizing findings in chat.
-4. If the user supplies another posting later, rerun all job-specific matching against it and regenerate the review.
-5. Do not rewrite the source resume until the user reviews the annotations and approves revisions.
+### Resume review
+
+Load `.github/skills/resume-review/SKILL.md` and follow its entry-point routing. Requests to open Resume Review launch the existing upload screen immediately, where the user supplies the resume and posting. Launch with `--provider copilot` to use GitHub Copilot CLI with the user’s GitHub account. If needed, guide installation and CLI sign-in; do not substitute Codex or Claude. For direct analysis in chat, follow the shared skill's evidence and job-posting requirements.
 
 ## Resume Generation Rules
 

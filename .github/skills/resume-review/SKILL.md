@@ -1,10 +1,9 @@
 ---
 name: resume-review
-description: Reviews uploaded Product Designer resumes against a target job and generates annotated HTML with requirement matches, highlighted issues, bullet-level alignment, and evidence-based revisions. Use when a user uploads a Markdown or Word resume and asks for review, critique, job matching, feedback, or what to fix.
-argument-hint: "Upload a resume and provide a target job URL or description"
+description: Reviews uploaded resumes against a target job using role-relevant criteria and generates annotated HTML with requirement matches, highlighted issues, bullet-level alignment, and evidence-based revisions. Use when a user asks to open Resume Review, review a resume, critique it, match a job, or identify what to fix. Opens the upload screen by default; also supports reviewing provided Markdown or Word files in chat.
 ---
 
-# Product Designer Resume Review
+# Resume Review
 
 ## Scope
 
@@ -12,12 +11,24 @@ Review an existing resume against the user's target job. Do not rewrite the full
 
 Supported uploads: `.md` and `.docx`.
 
+## Default Entry Point: Open The Upload Screen
+
+For `$resume-review`, `/resume-review`, “Review my resume”, or “Open Resume Review”, open the existing upload screen immediately. The user adds their resume and job posting there; do not ask for them in chat before opening it. Follow the chat workflow below only when the user specifically wants an in-chat review or supplies files and requests direct analysis.
+
+1. Use Python 3 with `python-docx` available (prefer the project's `.venv/bin/python` when present). Resolve the script relative to this skill's real directory so an installed skill works outside this repository too.
+2. Start `scripts/render_review.py --provider codex` from Codex, or `scripts/render_review.py --provider claude` from Claude Code. From Cursor use `--provider cursor`; from GitHub Copilot use `--provider copilot`. Keep the local server running using the host's background/long-running process support. Each invokes that CLI using the user's own sign-in/configuration; this is a separate analysis session, not access to the current conversation or necessarily its exact model.
+3. For other or unknown hosts, pass `--provider auto`. Only unambiguous Codex/Claude terminal markers are detected; otherwise the screen asks the user to choose among Codex, Claude Code, Cursor, and GitHub Copilot. Known hosts must pass their explicit provider. Cursor requires Cursor Agent CLI (`agent` or `cursor-agent`) and Copilot requires GitHub Copilot CLI (`copilot`), installed and signed in with the corresponding account. Editor sign-in alone does not establish CLI sign-in. Never substitute another provider silently.
+4. Open the printed localhost URL in the host's browser panel when available; otherwise use `--open` to launch the default browser and provide the URL. Do not hardcode a port. Reuse an existing server only after verifying it is this app with the intended provider; otherwise start a fresh server on a free port.
+5. Report any missing Python dependency, executable, or account setup accurately. Do not silently switch providers or ask for API secrets in chat. The page checks executable availability; account access is verified by the selected CLI when analysis begins.
+
+The page preserves the selected provider for a review and subsequent **Change job** requests. See [references/provider-setup.md](references/provider-setup.md) for setup and connection details.
+
 ## Workflow
 
 1. Identify the uploaded resume and target job posting. Accept either a public job-posting URL or the complete job description pasted by the user.
 2. If no posting was provided, stop and ask: "Please share the job posting URL or paste the full job description so I can review and match your resume against it." Do not substitute a sample posting, infer requirements from a title/company, or generate the matched review yet.
 3. Fetch a provided URL or parse the pasted description, then extract the exact role title, company, product context, and top 5-7 requirements. Prefer the employer's official posting over aggregators. Set `target_job.source` to the URL or exactly `User-provided job description`.
-4. Read [recruiter-guidelines.md](../resume-writing/references/recruiter-guidelines.md).
+4. Read and apply the shared review criteria linked below. The separate resume-writing skill's guidelines are specific to product design; do not apply them as a universal review rubric.
 5. Extract the visible blocks, especially for Word files:
 
    ```bash
@@ -52,43 +63,11 @@ The served preview includes **Change job**. It accepts a public URL or a pasted 
 2. Process it as the new posting using the steps above; never treat the saved request itself as completed analysis.
 3. After regeneration, change its `status` from `pending` to `processed` so the same request is not applied twice.
 
-## Review Rubric
+## Review Criteria
 
-Evaluate:
+Read [references/review-rubric.md](references/review-rubric.md) for role adaptation, review criteria, severity, evidence, and coverage requirements. This is the shared rubric used by both chat reviews and the upload application.
 
-- **Positioning:** target role, seniority, domain, and differentiator are immediately clear.
-- **Contact:** portfolio is prominent and contact details are complete.
-- **Summary:** concise, specific, evidence-based, and free of generic claims.
-- **Experience:** bullets communicate ownership, method, scope, and verified outcomes; current and past tense are correct.
-- **Projects:** selected work has working case-study URLs and demonstrates relevant range.
-- **Skills:** credible, grouped, role-relevant, and not duplicated by a tool inventory.
-- **Structure:** standard headings, reverse chronology, concise length, and fast recruiter scanability.
-- **Integrity:** no invented metrics, inflated ownership, unsupported causality, or unverified claims.
-
-For every Experience and Projects bullet, assess:
-
-- **Action and ownership:** what the candidate personally did is specific.
-- **Scope and context:** the product, users, team, scale, or problem is understandable.
-- **Method:** relevant design or research decisions explain how the work was done.
-- **Outcome and evidence:** the result is concrete, credible, and appropriately attributed.
-- **Clarity:** the bullet is concise, readable, and distinct from nearby bullets.
-
-Mark the bullet `strong` only when its content is interview-ready. Mark it `needs-work` when evidence, context, method, attribution, or clarity is materially missing.
-
-For target-job matching:
-
-- Extract requirements from the actual posting; do not infer specific requirements the employer did not state.
-- Mark `strong-match` only when the resume contains direct, credible evidence.
-- Mark `partial-match` when evidence is adjacent, incomplete, buried, or uses weaker framing.
-- Mark `gap` when the resume contains no evidence. A gap means “not demonstrated in this resume,” not “the candidate lacks this skill.”
-- Separate core requirements from preferred qualifications.
-- Recommend exact job language only when it truthfully describes the candidate's existing experience.
-
-Use severity consistently:
-
-- `critical`: likely to block recruiter understanding or credibility.
-- `important`: materially weakens positioning or evidence.
-- `polish`: useful improvement that does not change the core candidacy signal.
+The upload application extracts sections and assigns stable block IDs before analysis. Its compact response schema uses those IDs instead of copying resume text; the application validates references and restores exact quotes, sections, candidate name, and job source before saving the full JSON below. File operations and preview instructions apply to the chat workflow, not the application's analysis call.
 
 ## Review JSON
 

@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="review-token" content="__REVIEW_TOKEN__">
+<title>Resume Review — Start here</title>
+<style>
+:root{--ink:#121212;--muted:#686868;--accent:#b3ff28;--canvas:#fff;--line:#e7e7e7;--soft:#f6f6f6;--error:#a33a33}
+*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--canvas);font:15px/1.6 Arial,Helvetica,sans-serif}button,input,textarea,select{font:inherit}button,a,input,textarea{touch-action:manipulation}button{cursor:pointer}button:disabled{cursor:default}a{color:inherit}[hidden]{display:none!important}:focus-visible{outline:3px solid #658e1c;outline-offset:4px}
+.topbar{height:86px;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 38px;border-bottom:1px solid #f4f4f4}.brand{display:flex;align-items:center;gap:9px;font-weight:800;text-decoration:none;font-size:21px;letter-spacing:-1px}.brand-icon{display:grid;place-items:center;width:31px;height:34px;background:#121212;color:#fff;border-radius:8px}.topbar small{color:#6b6b6b;font-size:13px}
+.shell{max-width:1120px;margin:auto;padding:62px 24px 30px}.intro{text-align:center;margin-bottom:29px}h1{font-size:clamp(34px,4.3vw,54px);line-height:1.06;letter-spacing:-2.6px;font-weight:600;margin:0 0 18px}.intro p{color:var(--muted);margin:0 auto;max-width:660px;font-size:16px;line-height:1.6}.grid{display:flex;flex-direction:column;align-items:center;gap:34px}.card{width:100%;max-width:820px;background:white;border:1px solid #e8e8e8;border-radius:23px;padding:27px;box-shadow:0 0 0 6px #f7f7f7,0 12px 40px #00000008}
+#review-form{display:grid;grid-template-columns:1fr 1fr;gap:0 25px}.upload-field,.job-field{min-width:0}.field-title{display:flex;align-items:center;gap:9px;font-size:14px;font-weight:600;margin:0 0 13px}.number{background:#f4f4f4;border-radius:50%;width:23px;height:23px;display:grid;place-items:center;font-size:11px;color:#666;flex-shrink:0}.drop{border:1.5px dashed #d4d4d4;background:#fafafa;border-radius:14px;min-height:172px;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:17px 12px;text-align:center;transition:background .15s,border-color .15s}.drop.dragging{background:#efffd8;border-color:#60891a}.upload-icon{width:34px;height:34px;margin-bottom:9px;color:#292929}.drop strong{font-size:14px;font-weight:600}.drop p{margin:4px 0 0;color:var(--muted);font-size:12px}.browse{background:none;border:0;padding:0;color:var(--ink);text-decoration:underline;text-underline-offset:3px;font-weight:600}.file-selection{display:flex;align-items:center;gap:12px;border:1px solid #d4e9b3;border-radius:14px;background:#f5ffe7;padding:17px;min-height:172px}.file-details{min-width:0;flex:1}.file-details strong{display:block;overflow-wrap:anywhere;font-size:14px}.file-details small{color:var(--muted);font-size:12px}.remove{border:0;background:none;color:var(--muted);padding:8px;font-size:21px}
+textarea{display:block;width:100%;resize:vertical;min-height:172px;border:1px solid #e1e1e1;border-radius:14px;background:#fff;padding:14px;color:var(--ink);font-size:14px;line-height:1.6}textarea::placeholder{color:#828282}.hint{font-size:11px;color:var(--muted);margin:7px 0 0}.submit{grid-column:1/-1;border:0;background:var(--accent);color:#121212;width:100%;padding:13px 20px;border-radius:30px;font-weight:600;margin-top:22px;display:flex;align-items:center;justify-content:center;gap:12px;transition:background .15s}.submit:disabled{background:#efffd8;color:#586844}.submit:not(:disabled):hover{background:#a0ed14}.privacy{grid-column:1/-1;font-size:11px;line-height:1.65;text-align:center;color:var(--muted);margin:13px 0 0}.error{grid-column:1/-1;background:#fff2ef;border:1px solid #f1d2cb;border-radius:12px;color:var(--error);font-size:13px;padding:12px 14px;margin:18px 0 0}
+.aside{max-width:890px;display:grid;grid-template-columns:repeat(3,1fr);gap:25px;width:100%;padding:9px 7px 0}.aside h2{grid-column:1/-1;text-align:center;font-size:19px;letter-spacing:-.5px;font-weight:600;margin:0 0 3px}.benefit{display:flex;align-items:flex-start;gap:11px}.check{font-size:13px;color:#202c10;display:grid;place-items:center;background:#efffd8;border-radius:50%;width:24px;height:24px;flex-shrink:0}.benefit h3{font-size:13px;margin:0 0 5px;font-weight:600}.benefit p{color:var(--muted);font-size:12px;margin:0;line-height:1.65}.aside-note{grid-column:1/-1;text-align:center;color:#737373;font-size:11px;margin:0}.aside-note br{display:none}.footer{font-size:11px;color:#757575;display:flex;justify-content:space-between;gap:16px;margin-top:42px;padding-top:19px;border-top:1px solid #eee}
+.connection{margin:0 0 22px;padding-bottom:17px;border-bottom:1px solid var(--line)}.connection-row{display:flex;align-items:center;justify-content:space-between;gap:16px}.connection label{font-size:13px;font-weight:600}.connection select{max-width:65%;background:white;border:1px solid #d4d4d4;border-radius:8px;padding:7px 10px;color:var(--ink)}.connection p{font-size:12px;color:var(--muted);margin:7px 0 0}.progress{text-align:center;padding:36px 24px}.progress h2{font-size:30px;font-weight:600;letter-spacing:-1px;margin:20px 0 9px}.progress p{color:var(--muted);font-size:14px}.spinner{display:inline-block;width:42px;height:42px;border:3px solid #eef5e4;border-top-color:#74ae0c;border-radius:50%;animation:spin 1s linear infinite}.steps{text-align:left;list-style:none;max-width:330px;margin:26px auto 0;padding:0}.steps li{font-size:13px;padding:10px 0;color:#858585}.steps li::before{content:'○';margin-right:12px}.steps li.active{color:#121212;font-weight:600}.steps li.done{color:#46730b}.steps li.done::before{content:'✓'}.secondary{background:#121212;border:0;border-radius:30px;padding:11px 21px;color:white;margin-top:16px}.progress-error{max-width:470px;margin:20px auto 0;text-align:left}@keyframes spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.spinner{animation:none}}@media(max-width:700px){.topbar{height:72px;padding:0 20px}.topbar small{display:none}.shell{padding:38px 20px 24px}h1{letter-spacing:-1.6px}.intro p{font-size:14px}.desktop-break{display:none}#review-form{grid-template-columns:1fr}.job-field{margin-top:21px}.card{padding:22px}.aside{grid-template-columns:1fr;gap:20px;max-width:420px}.aside h2{text-align:left}.aside-note{text-align:left}.footer{flex-wrap:wrap;gap:5px}.progress{padding:25px 0}.brand{font-size:18px}}
+</style>
+</head>
+<body>
+<header class="topbar"><a class="brand" href="/"><span class="brand-icon" aria-hidden="true"><svg width="17" height="21" viewBox="0 0 17 21" fill="none"><path d="M3 1.5h7l4 4v14H3zM10 1.5v4h4M5.5 10h6M5.5 13h6M5.5 16h4" stroke="currentColor" stroke-width="1.2"/></svg></span>Resume Review</a><small>Clear feedback. Your next opportunity.</small></header>
+<main class="shell">
+<div class="intro"><h1>Review your resume<br>against the job.</h1><p>Upload your resume and add a job posting.<br class="desktop-break"> Get feedback based on the role’s requirements and your experience.</p></div>
+<div class="grid">
+<section class="card" aria-label="Start a resume review">
+<div class="connection"><div class="connection-row"><label for="ai-provider">Review with</label><select id="ai-provider" aria-describedby="connection-status"><option value="">Choose your AI tool</option></select></div><p id="connection-status" role="status"></p></div>
+<form id="review-form"><div class="upload-field">
+<div class="field-title"><span class="number" aria-hidden="true">1</span><span id="resume-label">Add your resume</span></div>
+<input type="file" id="resume-file" accept=".docx,.md" aria-labelledby="resume-label" hidden>
+<div class="drop" id="drop-zone">
+<svg class="upload-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M10 3.5h11l7 7v20H10zM21 3.5v7h7M18 25V15m-4 4 4-4 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<strong>Drag your resume here</strong><p>or <button class="browse" id="browse" type="button">choose a file</button></p><p style="margin-top:12px">Word (.docx) or Markdown (.md) · Up to 5 MB</p>
+</div>
+<div id="selected-file" class="file-selection" hidden><span class="check" aria-hidden="true">✓</span><div class="file-details"><strong id="file-name"></strong><small id="file-size"></small></div><button type="button" class="remove" id="remove-file" aria-label="Remove selected resume">×</button></div>
+</div><div class="job-field"><label class="field-title" for="job-source"><span class="number" aria-hidden="true">2</span>The role you have in mind</label><textarea id="job-source" required maxlength="80000" placeholder="Paste the job posting link or the full job description…" aria-describedby="job-hint"></textarea><p class="hint" id="job-hint">A specific job helps us give you specific feedback.</p></div>
+<div class="error" id="form-error" role="alert" hidden></div>
+<button class="submit" id="submit-review" type="submit" disabled>Review my resume <span aria-hidden="true">→</span></button>
+<p class="privacy">Your resume and job details are sent to <span id="privacy-provider">your selected AI tool</span> for analysis.<br>Files and results are saved in this project on your computer.</p>
+</form>
+<div class="progress" id="progress" aria-live="polite" hidden><span class="spinner" id="spinner" aria-hidden="true"></span><h2 id="progress-title">Taking a closer look.</h2><p id="progress-message">Reading your resume…</p><ol class="steps" id="steps"><li data-step="reading">Read your resume</li><li data-step="reviewing">Match the role and review each bullet</li><li data-step="checking">Verify the feedback and prepare your review</li></ol><p class="hint" id="wait-hint">This can take a few minutes. Your review will open here.</p><div class="error progress-error" id="progress-error" hidden></div><button class="secondary" type="button" id="retry" hidden>Try again</button></div>
+</section>
+<aside class="aside"><h2>A review you can act on.</h2><div class="benefit"><span class="check" aria-hidden="true">✓</span><div><h3>Understand your fit</h3><p>See strong matches, partial matches, and requirements your resume hasn’t demonstrated yet.</p></div></div><div class="benefit"><span class="check" aria-hidden="true">✓</span><div><h3>Get feedback in context</h3><p>Every comment connects to the exact words in your resume. No guessing what to change.</p></div></div><div class="benefit"><span class="check" aria-hidden="true">✓</span><div><h3>Make each bullet count</h3><p>Get specific guidance on ownership, process, scope, and outcomes.</p></div></div><p class="aside-note">Grounded in your experience. <br>Suggestions won’t invent achievements or metrics.</p></aside>
+</div>
+<footer class="footer"><span>Your experience, with a clearer story.</span><span>Qualitative feedback · No ATS score</span></footer>
+</main>
+<script>
+const $ = id => document.getElementById(id);
+const form = $('review-form'), input = $('resume-file'), source = $('job-source'), submit = $('submit-review');
+let selected = null, submitting = false, pollVersion = 0;
+const providerConfig = __PROVIDER_CONFIG__;
+const providerSelect = $('ai-provider');
+for (const provider of providerConfig.providers) {
+  const option = document.createElement('option'); option.value = provider.id; option.textContent = provider.name; providerSelect.append(option);
+}
+providerSelect.value = providerConfig.selected;
+function updateProvider() {
+  const provider = providerConfig.providers.find(item => item.id === providerSelect.value);
+  $('privacy-provider').textContent = provider ? provider.name : 'your selected AI tool';
+  $('connection-status').textContent = !provider ? 'Choose the tool and account you want to use.' : provider.installed ? 'Using ' + provider.name + '. Sign-in and account access are checked when the review starts.' : provider.name + ' CLI is not installed or cannot be found. ' + provider.setup + ' Reload this page afterward.';
+  updateButton();
+}
+providerSelect.addEventListener('change', updateProvider);
+const token = document.querySelector('meta[name="review-token"]').content;
+function updateButton() { const provider = providerConfig.providers.find(item => item.id === providerSelect.value); submit.disabled = submitting || !selected || !source.value.trim() || !provider || !provider.installed; }
+function showError(message) { $('form-error').textContent = message; $('form-error').hidden = false; }
+function selectFile(files) {
+  if (submitting) return;
+  if (files.length !== 1) { showError('Choose one resume at a time.'); return; }
+  const file = files[0];
+  if (!/\.(docx|md)$/i.test(file.name)) { showError('Choose a Word (.docx) or Markdown (.md) resume.'); return; }
+  if (!file.size || file.size > 5 * 1024 * 1024) { showError('Choose a non-empty resume smaller than 5 MB.'); return; }
+  selected = file; $('file-name').textContent = file.name;
+  $('file-size').textContent = (file.size < 1024 * 1024 ? Math.max(1, Math.round(file.size / 1024)) + ' KB' : (file.size / 1024 / 1024).toFixed(1) + ' MB') + ' · Ready to review';
+  $('selected-file').hidden = false; $('drop-zone').hidden = true; $('form-error').hidden = true; updateButton();
+}
+$('browse').addEventListener('click', () => input.click());
+input.addEventListener('change', () => { if (input.files.length) selectFile(input.files); input.value = ''; });
+$('remove-file').addEventListener('click', () => { selected = null; input.value = ''; $('selected-file').hidden = true; $('drop-zone').hidden = false; updateButton(); $('browse').focus(); });
+source.addEventListener('input', updateButton);
+for (const event of ['dragenter', 'dragover']) $('drop-zone').addEventListener(event, e => { e.preventDefault(); $('drop-zone').classList.add('dragging'); });
+for (const event of ['dragleave', 'drop']) $('drop-zone').addEventListener(event, e => { e.preventDefault(); $('drop-zone').classList.remove('dragging'); });
+$('drop-zone').addEventListener('drop', e => selectFile(e.dataTransfer.files));
+window.addEventListener('dragover', e => e.preventDefault());
+window.addEventListener('drop', e => e.preventDefault());
+function showProgress() { providerSelect.disabled = true; form.hidden = true; $('progress').hidden = false; $('progress-error').hidden = true; $('retry').hidden = true; $('spinner').hidden = false; $('steps').hidden = false; $('wait-hint').hidden = false; $('progress-title').textContent = 'Taking a closer look.'; }
+function failProgress(message) { $('spinner').hidden = true; $('steps').hidden = true; $('wait-hint').hidden = true; $('progress-title').textContent = 'Let’s try that again.'; $('progress-message').textContent = 'Your original resume is unchanged.'; $('progress-error').textContent = message; $('progress-error').hidden = false; $('retry').hidden = false; }
+async function poll(identifier) {
+  const version = ++pollVersion; showProgress();
+  let failures = 0;
+  while (version === pollVersion) {
+    try {
+      const response = await fetch('/api/reviews/' + identifier);
+      const status = await response.json();
+      if (version !== pollVersion) return;
+      if (!response.ok) { failProgress(status.error || 'Review not found. Start a new review.'); return; }
+      failures = 0;
+      if (status.provider) { providerSelect.value = status.provider; updateProvider(); }
+      if (status.status === 'complete') { window.location.assign(status.review_url); return; }
+      if (status.status === 'failed') { failProgress(status.message); return; }
+      $('progress-message').textContent = status.message;
+      const stage = ['reading', 'reviewing', 'checking'].indexOf(status.status);
+      document.querySelectorAll('[data-step]').forEach((step, index) => { step.className = index < stage ? 'done' : index === stage ? 'active' : ''; });
+    } catch (error) {
+      if (++failures >= 3) { failProgress('The connection was interrupted. Keep the local review server running, then reload this page to reconnect.'); return; }
+    }
+    await new Promise(resolve => setTimeout(resolve, 1500));
+  }
+}
+function readFile(file) { return new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result.split(',')[1]); reader.onerror = () => reject(new Error('The file could not be read. Please choose it again.')); reader.readAsDataURL(file); }); }
+form.addEventListener('submit', async event => {
+  event.preventDefault(); if (!selected || submitting) return;
+  submitting = true; providerSelect.disabled = true; updateButton(); $('form-error').hidden = true; submit.textContent = 'Uploading…';
+  try {
+    const response = await fetch('/api/reviews', {method:'POST', headers:{'Content-Type':'application/json', 'X-Review-Token':token}, body:JSON.stringify({provider:providerSelect.value, filename:selected.name, file:await readFile(selected), source:source.value})});
+    const result = await response.json();
+    if (!response.ok) throw new Error(result.error || 'The upload could not be completed. Please try again.');
+    history.replaceState(null, '', '/?review=' + result.id); poll(result.id);
+  } catch (error) { showError(error.message || 'The upload could not be completed. Please try again.'); }
+  finally { submitting = false; providerSelect.disabled = !$('progress').hidden; submit.textContent = 'Review my resume →'; updateButton(); }
+});
+$('retry').addEventListener('click', () => { ++pollVersion; history.replaceState(null, '', '/'); $('progress').hidden = true; form.hidden = false; providerSelect.disabled = false; updateButton(); source.focus(); });
+updateProvider();
+const pending = new URLSearchParams(location.search).get('review');
+if (pending && /^[0-9a-f]{32}$/.test(pending)) poll(pending);
+</script>
+</body>
+</html>

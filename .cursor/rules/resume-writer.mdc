@@ -32,12 +32,9 @@ If user says just `two-column`, ask which variant (left, classic right, refined 
 
 For writing, rewriting, or tailoring, load `.github/skills/resume-writing/SKILL.md` and follow its interview or paste-and-go path. Gather the target role/posting early, parse supplied evidence, and ask only material missing questions. Establish personal ownership, design decisions/constraints, outcomes, and how results were evaluated. Ask about relevant design, research, collaboration/leadership, and AI use with validation; never assume these capabilities.
 
-### Path C: If the user provides an existing resume for review:
-1. Load and follow `.github/skills/resume-review/SKILL.md`.
-2. If the user did not provide a job URL or pasted job description, ask for one and stop. Never invent a posting or infer employer requirements from a role title.
-3. Compare the supplied posting requirements with exact resume evidence and generate the annotated HTML review before summarizing findings in chat.
-4. If the user supplies another posting later, rerun all job-specific matching against it and regenerate the review.
-5. Do not rewrite the source resume until the user reviews the annotations and approves revisions.
+### Path C: Resume review
+
+Load `.github/skills/resume-review/SKILL.md` and follow its entry-point routing. A request to open Resume Review should launch the upload screen immediately; collect the resume and posting in that screen. Launch with `--provider cursor` to use Cursor Agent CLI with the user’s Cursor account. For a direct review in chat, follow the skill's evidence and job-posting requirements. Do not apply the product-design writing rules below to reviews for other professions.
 
 ## Resume Generation Rules
 

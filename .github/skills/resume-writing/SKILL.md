@@ -1,10 +1,11 @@
 ---
 name: resume-writing
 description: "Writes and tailors Product Designer resumes. Use when creating, rewriting, tailoring to a job posting, or converting resume content to Word, PDF, or editable HTML."
-argument-hint: "Paste your career info, or say 'help me write a resume' to start the interview"
 ---
 
 # Product Designer Resume Writing
+
+Start by pasting career information or saying “help me write a resume” to begin the interview.
 
 ## When to Use
 - User wants to create a new Product Designer resume from scratch
@@ -68,6 +69,8 @@ For a supplied posting URL or pasted description, identify the main requirements
 Save the resume as `{FirstName}_{LastName}_Resume.md` in the workspace.
 
 ### Step 6: Generate the editable HTML review first
+Use the shared preview template's default app style: white and light-gray surfaces, black sans-serif interface text, clear action buttons, and restrained lime accents. Keep interface controls independent of the resume accent picker. Static labels should not look like buttons. Apply this interface consistently across all five resume layouts; the selected document layout controls the resume and its exports.
+
 Start `python3 .github/skills/resume-writing/scripts/serve_resume.py {FirstName}_{LastName}_Resume.md --layout {selected-layout}` as a long-running local server, then open and link the localhost URL. The first user-facing artifact must be this editable HTML preview, initially using the layout the user selected. The Template menu lets the user compare all five layouts without losing browser edits. Do not pre-generate or present Word/PDF as final before review. Keep the server running while the user reviews and downloads. **Save as Word** and **Save as PDF** use the currently selected layout and include browser edits. Word needs the layout fonts installed for the closest match; line wrapping can vary by renderer. A standalone `file://` HTML cannot run Python exports. Browser edits do not update the source Markdown; incorporate approved changes there when they should become source content. ATS checking is separate from the preview; run it on the exported Word file when requested. Do not claim a one-page export without checking the actual file.
 
 For editorial Word typography, install DM Sans and the static Manrope ExtraBold face, then restart Word if it was open during installation. Verify the actual Word render; Quick Look may substitute fonts or ignore tab alignment. Editorial Word exports use `build_layout_editorial`, never the refined-right generator.

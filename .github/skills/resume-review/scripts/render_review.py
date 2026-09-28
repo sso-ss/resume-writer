@@ -225,6 +225,10 @@ def match_findings(blocks: list[Block], findings: list[dict]) -> tuple[dict[int,
     for finding_index, finding in enumerate(findings):
         quote = normalize(finding["quote"])
         section = normalize(finding["section"])
+        if "block_id" in finding:
+            index = referenced_block(blocks, finding["block_id"], finding["quote"])
+            matches.setdefault(index, []).append(finding_index)
+            continue
         candidates = [
             block_index for block_index, block in enumerate(blocks)
             if quote in normalize(block.text) and (
@@ -243,6 +247,15 @@ def match_findings(blocks: list[Block], findings: list[dict]) -> tuple[dict[int,
     return matches, unmatched
 
 
+def referenced_block(blocks: list[Block], identifier: str, quote: str) -> int:
+    if not isinstance(identifier, str) or not re.fullmatch(r"r[1-9][0-9]*", identifier):
+        raise ValueError("Invalid resume block ID")
+    index = int(identifier[1:]) - 1
+    if index >= len(blocks) or not quote or quote not in blocks[index].text:
+        raise ValueError(f"Evidence does not match resume block {identifier}")
+    return index
+
+
 def match_bullet_reviews(blocks: list[Block], bullet_reviews: list[dict]) -> dict[int, int]:
     reviewable = {
         block_index for block_index, block in enumerate(blocks)
@@ -253,6 +266,14 @@ def match_bullet_reviews(blocks: list[Block], bullet_reviews: list[dict]) -> dic
     for review_index, bullet_review in enumerate(bullet_reviews):
         quote = normalize(bullet_review["quote"])
         section = normalize(bullet_review["section"])
+        if "block_id" in bullet_review:
+            index = referenced_block(blocks, bullet_review["block_id"], bullet_review["quote"])
+            if (index not in reviewable or index in matches
+                    or blocks[index].text != bullet_review["quote"]
+                    or normalize(blocks[index].section) != section):
+                raise ValueError("Bullet ID must reference one complete, unreviewed Experience or Projects bullet")
+            matches[index] = review_index
+            continue
         candidates = [
             block_index for block_index in reviewable
             if block_index not in matches
@@ -279,6 +300,13 @@ def match_job_requirements(blocks: list[Block], requirements: list[dict]) -> dic
     matches: dict[int, list[int]] = {}
     unmatched: list[tuple[int, str]] = []
     for requirement_index, requirement in enumerate(requirements):
+        if "evidence_ids" in requirement:
+            if len(requirement["evidence_ids"]) != len(requirement["evidence_quotes"]):
+                raise ValueError("Evidence IDs and quotes must have equal length")
+            for identifier, quote in zip(requirement["evidence_ids"], requirement["evidence_quotes"]):
+                index = referenced_block(blocks, identifier, quote)
+                matches.setdefault(index, []).append(requirement_index)
+            continue
         for quote in requirement["evidence_quotes"]:
             needle = normalize(quote)
             candidates = [
@@ -321,7 +349,7 @@ def highlight(text: str, quotes: Iterable[str]) -> str:
     return "".join(output)
 
 
-def build_html(resume_path: Path, review_path: Path, output_path: Path) -> Path:
+def build_html(resume_path: Path, review_path: Path, output_path: Path, *, app_review_id: str = "") -> Path:
     blocks = extract_blocks(resume_path)
     review = load_review(review_path)
     findings = review["findings"]
@@ -435,6 +463,7 @@ def build_html(resume_path: Path, review_path: Path, output_path: Path) -> Path:
 
     counts = {severity: sum(item["severity"] == severity for item in findings) for severity in SEVERITIES}
     match_counts = {status: sum(item["status"] == status for item in requirements) for status in JOB_MATCH_STATUSES}
+    feedback_heading = '<h2 class="panel-heading">Resume feedback</h2>' if findings else ""
     strengths_html = "".join(f"<li>{escape(item)}</li>" for item in strengths)
     unmatched_notice = (
         f'<p class="anchor-warning">{len(unmatched)} annotation anchor(s) were not found in the resume.</p>'
@@ -445,47 +474,26 @@ def build_html(resume_path: Path, review_path: Path, output_path: Path) -> Path:
         if target_job["source"].startswith(("https://", "http://"))
         else escape(target_job["source"])
     )
+    update_url = f"/api/reviews/{app_review_id}/job" if app_review_id else "/update-job"
+    start_link = ('<nav class="review-nav"><a class="review-brand" href="/">Resume Review</a>'
+                  '<a class="new-review" href="/">Review another resume ↗</a></nav>') if app_review_id else ""
+    stylesheet = (Path(__file__).resolve().parent.parent / "templates/review-page.css").read_text(encoding="utf-8")
+    job_dialog_description = ("Add the new posting to generate a fresh review of this resume."
+                              if app_review_id else "Enter a public job-posting URL or paste the full job description. Your assistant will use it to regenerate this review.")
+    job_submit_label = "Review this job" if app_review_id else "Save update request"
     html = f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{escape(candidate)} | Resume Review</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;700;800&display=swap');
-:root{{--ink:#202520;--muted:#667068;--paper:#fff;--canvas:#edf0ec;--line:#d7ddd7;--accent:#244a3b;--green:#356b58;--green-soft:#eaf3ee;--amber:#8a5b12;--amber-soft:#fbf2df;--red:#a33a33;--red-soft:#faecea;--blue:#315f76;--blue-soft:#eaf2f6}}
-*{{box-sizing:border-box}} body{{margin:0;background:var(--canvas);color:var(--ink);font:14px/1.5 'DM Sans',sans-serif}}
-button{{font:inherit}} .review-header{{background:#19382d;color:#f7faf7;padding:28px max(24px,calc((100vw - 1420px)/2));display:grid;grid-template-columns:minmax(0,1fr) auto;gap:28px;align-items:end}}
-.kicker{{margin:0 0 6px;color:#b9cdbf;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.4px}} .review-header h1{{font:800 30px/1.15 Manrope,sans-serif;margin:0}}
-.overall{{max-width:760px;margin:9px 0 0;color:#dce7df}} .counts{{display:flex;gap:8px;flex-wrap:wrap}} .counts span{{border:1px solid #ffffff35;padding:7px 10px;border-radius:6px;font-size:12px}}
-.workspace{{max-width:1420px;margin:24px auto;display:grid;grid-template-columns:minmax(540px,816px) minmax(320px,1fr);gap:24px;padding:0 20px;align-items:start}}
-.resume{{background:var(--paper);min-height:1056px;padding:52px 60px;box-shadow:0 10px 34px #24322912}} .resume-block{{position:relative}}
-.resume h1{{font:800 34px/1.15 Manrope,sans-serif;margin:0 0 12px}} .resume h2{{font:700 11px/1.2 Manrope,sans-serif;text-transform:uppercase;letter-spacing:1.2px;color:var(--accent);border-bottom:1px solid var(--line);padding-bottom:6px;margin:24px 0 12px}}
-.resume h3{{font:700 14px/1.35 Manrope,sans-serif;margin:14px 0 5px}} .resume p{{margin:0 0 9px}} .resume li{{margin:0 0 7px;padding-left:5px}}
-.resume li::marker{{color:#7a847d}} mark{{background:var(--amber-soft);color:inherit;padding:1px 0}}
-.annotated{{outline:1px solid #d8b56f;outline-offset:5px;border-radius:2px;background:#fffdf8}} .resume-block.selected{{outline:2px solid var(--blue);outline-offset:5px;border-radius:2px;background:var(--blue-soft)}}
-.bullet-reviewed{{padding-left:8px}} .bullet-strong{{background:linear-gradient(90deg,var(--green-soft),transparent 38%)}} .bullet-needs-work{{background:linear-gradient(90deg,var(--amber-soft),transparent 38%)}}
-.badges{{position:absolute;right:-48px;top:0;display:flex;gap:3px}} .badges button{{min-width:25px;height:25px;border:1px solid transparent;border-radius:13px;font-size:10px;font-weight:700;cursor:pointer;padding:0 6px}} .badges .finding-badge.critical{{background:var(--red-soft);border-color:#ddb5b1;color:var(--red)}} .badges .finding-badge.important,.badges .finding-badge.polish,.badges .bullet-badge.needs-work{{background:var(--amber-soft);border-color:#dfc48b;color:var(--amber)}} .badges .bullet-badge.strong{{background:var(--green-soft);border-color:#b8d1c5;color:var(--green)}} .badges .job-badge{{background:var(--blue-soft);border-color:#b8ccd6;color:var(--blue)}}
-.review-panel{{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow:auto;padding-right:6px}} .strengths{{padding:2px 2px 18px;border-bottom:1px solid var(--line);margin-bottom:18px}} .strengths h2{{font:700 15px Manrope,sans-serif;margin:0 0 6px}} .strengths ul{{margin:0;padding-left:18px;color:#4f5952}}
-.anchor-warning,.unmatched{{color:var(--red);font-weight:700}} .annotation{{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:18px 18px 17px;margin:0 0 12px;box-shadow:0 2px 10px #2432290a;scroll-margin-top:16px}}
-.annotation.selected{{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-soft),0 8px 24px #24322914}}
-.annotation-meta{{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;text-transform:uppercase}} .annotation-meta span,.review-tag{{display:grid;place-items:center;min-width:25px;height:25px;padding:0 5px;border:1px solid transparent;border-radius:13px;font-weight:700}} .annotation.critical .annotation-meta span{{background:var(--red-soft);border-color:#ddb5b1;color:var(--red)}} .annotation.important .annotation-meta span,.annotation.polish .annotation-meta span{{background:var(--amber-soft);border-color:#dfc48b;color:var(--amber)}} .annotation-meta small{{margin-left:auto}}
-.annotation-meta strong,.bullet-review-meta strong,.job-match-meta strong{{border-radius:4px;padding:3px 6px}} .annotation.critical .annotation-meta strong{{background:var(--red-soft);color:var(--red)}} .annotation.important .annotation-meta strong,.annotation.polish .annotation-meta strong{{background:var(--amber-soft);color:var(--amber)}}
-.annotation h3{{font:700 16px/1.3 Manrope,sans-serif;margin:10px 0 7px}} .annotation p{{margin:0 0 10px}} .why b,.suggestion b{{display:block;font-size:11px;text-transform:uppercase;color:var(--muted);margin-bottom:3px}}
-.suggestion{{background:#f1f5f1;padding:11px 12px;border-radius:6px}} .suggestion p{{margin:0}}
-.panel-heading{{font:700 16px Manrope,sans-serif;margin:24px 0 10px}} .bullet-review{{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin:0 0 10px;box-shadow:0 2px 10px #2432290a;scroll-margin-top:16px}} .bullet-review.selected{{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-soft),0 8px 24px #24322914}}
-.bullet-review-meta{{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;text-transform:uppercase}} .bullet-review-meta small{{margin-left:auto}} .bullet-review-meta .review-tag.strong{{background:var(--green-soft);border-color:#b8d1c5;color:var(--green)}} .bullet-review-meta .review-tag.needs-work{{background:var(--amber-soft);border-color:#dfc48b;color:var(--amber)}} .bullet-quote{{font-weight:600;margin:10px 0 8px}} .bullet-detail{{margin:10px 0}} .bullet-detail b{{display:block;font-size:11px;text-transform:uppercase;color:var(--muted)}} .bullet-detail ul{{margin:4px 0 0;padding-left:18px}} .bullet-detail.gaps{{color:#775219}}
-.bullet-review.strong .bullet-review-meta strong{{background:var(--green-soft);color:var(--green)}} .bullet-review.needs-work .bullet-review-meta strong{{background:var(--amber-soft);color:var(--amber)}}
-.target-job{{border-bottom:1px solid var(--line);padding-bottom:18px;margin-bottom:18px}} .target-job-heading{{display:flex;align-items:start;justify-content:space-between;gap:12px}} .target-job h2{{font:700 17px Manrope,sans-serif;margin:0 0 4px}} .target-job>p{{margin:0 0 9px;color:#4f5952}} .target-job .job-source{{font-size:12px}} .target-job a{{color:#315f76;font-weight:600}} .change-job{{border:1px solid #b8ccd6;background:var(--blue-soft);color:var(--blue);border-radius:5px;padding:6px 9px;font-size:12px;font-weight:700;white-space:nowrap;cursor:pointer}} .match-counts{{display:flex;gap:6px;flex-wrap:wrap;font-size:11px}} .match-counts span{{background:#fff;padding:5px 8px;border-radius:5px;border:1px solid var(--line)}}
-.job-dialog{{width:min(560px,calc(100vw - 28px));border:1px solid var(--line);border-radius:6px;padding:0;box-shadow:0 24px 70px #13261e40;color:var(--ink)}} .job-dialog::backdrop{{background:#14251e99}} .job-dialog form{{padding:22px}} .job-dialog h2{{font:700 19px Manrope,sans-serif;margin:0 0 6px}} .job-dialog p{{margin:0 0 14px;color:#4f5952}} .job-dialog label{{display:block;font-size:12px;font-weight:700;margin-bottom:6px}} .job-dialog textarea{{display:block;width:100%;min-height:180px;resize:vertical;border:1px solid #bfc8c1;border-radius:5px;padding:10px 11px;font:13px/1.45 'DM Sans',sans-serif;color:var(--ink)}} .job-dialog textarea:focus{{outline:2px solid var(--blue-soft);border-color:var(--blue)}} .dialog-actions{{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}} .dialog-actions button{{border:1px solid var(--line);border-radius:5px;padding:8px 11px;background:#fff;cursor:pointer;font-weight:700}} .dialog-actions .submit-job{{background:var(--accent);border-color:var(--accent);color:#fff}} .job-update-status{{min-height:21px;margin-top:10px!important;font-size:12px;font-weight:600}} .job-update-status.error{{color:var(--red)}} .job-update-status.success{{color:var(--green)}}
-.job-match{{background:var(--paper);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin:0 0 10px;box-shadow:0 2px 10px #2432290a;scroll-margin-top:16px}} .job-match.selected{{border-color:var(--blue);box-shadow:0 0 0 2px var(--blue-soft),0 8px 24px #24322914}} .job-match-meta{{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:11px;text-transform:uppercase}} .job-match-meta .review-tag{{background:var(--blue-soft);border-color:#b8ccd6;color:var(--blue)}} .job-match-meta small{{margin-left:auto}} .job-match.strong-match .job-match-meta strong{{background:var(--green-soft);color:var(--green)}} .job-match.partial-match .job-match-meta strong{{background:var(--amber-soft);color:var(--amber)}} .job-match.gap .job-match-meta strong{{background:var(--red-soft);color:var(--red)}} .job-match h3{{font:700 15px/1.35 Manrope,sans-serif;margin:9px 0 7px}} .job-evidence b,.job-alignment b{{display:block;font-size:11px;text-transform:uppercase;color:var(--muted)}} .job-evidence ul{{margin:4px 0 8px;padding-left:18px}} .job-gap-note{{font-weight:600;color:var(--red)}} .job-alignment{{background:var(--green-soft);padding:9px 10px;border-radius:5px}} .job-alignment.partial-match{{background:var(--amber-soft)}} .job-alignment.not-relevant{{background:#f1f2f1;color:#5f6761}}
-@media(max-width:900px){{.review-header{{grid-template-columns:1fr}}.workspace{{grid-template-columns:1fr}}.review-panel{{position:static;max-height:none}}.resume{{min-height:0;padding:38px 42px}}}}
-@media(max-width:560px){{.workspace{{padding:0 10px}}.resume{{padding:30px 36px 30px 24px}}.badges{{right:-30px}}.review-header{{padding:24px}}}}
-</style></head><body>
-<header class="review-header"><div><p class="kicker">Resume review · Target: {escape(target_job['title'])} at {escape(target_job['company'])}</p><h1>{escape(candidate)}</h1><p class="overall">{escape(overall)}</p></div>
-<div class="counts"><span>{counts['critical']} critical</span><span>{counts['important']} important</span><span>{counts['polish']} polish</span></div></header>
+<style>{stylesheet}</style></head><body>{start_link}
+<header class="review-header"><div><p class="kicker">Resume review · Target: {escape(target_job['title'])} at {escape(target_job['company'])}</p><h1>{escape(candidate)}</h1><p class="overall">{escape(overall)}</p></div></header>
+<section class="review-key" aria-label="Feedback filters and annotation key"><div class="review-key-heading"><strong>Explore your feedback</strong><span>Filter suggestions by severity</span></div><div class="severity-filters" role="group" aria-label="Filter suggestions by severity"><button type="button" data-severity-filter="all" aria-pressed="true">All suggestions <b>{len(findings)}</b></button><button type="button" data-severity-filter="critical" aria-pressed="false">Critical <b>{counts['critical']}</b></button><button type="button" data-severity-filter="important" aria-pressed="false">Important <b>{counts['important']}</b></button><button type="button" data-severity-filter="polish" aria-pressed="false">Polish <b>{counts['polish']}</b></button></div><div class="annotation-key" aria-label="Annotation key"><span><b class="key-job">J</b> Job requirement</span><span><b class="key-bullet">B</b> Bullet review</span><span><b>1</b> Suggested improvement</span></div><span id="filter-status" class="visually-hidden" role="status">Showing all suggestions.</span></section>
 <main class="workspace"><article class="resume" aria-label="Annotated resume">{''.join(document_parts)}</article>
-<aside class="review-panel" aria-label="Review annotations"><section class="target-job"><div class="target-job-heading"><h2>{escape(target_job['title'])} · {escape(target_job['company'])}</h2><button type="button" class="change-job" id="change-job">Change job</button></div><p>{escape(target_job['summary'])}</p><p class="job-source">Source: {job_source}</p><div class="match-counts"><span>{match_counts['strong-match']} strong</span><span>{match_counts['partial-match']} partial</span><span>{match_counts['gap']} gaps</span></div></section><h2 class="panel-heading">Job requirement match</h2>{''.join(job_cards)}<section class="strengths"><h2>What already works</h2><ul>{strengths_html}</ul>{unmatched_notice}</section>{''.join(cards)}<h2 class="panel-heading">Bullet-by-bullet content review</h2>{''.join(bullet_cards)}</aside></main>
-<dialog class="job-dialog" id="job-dialog"><form id="job-update-form"><h2>Change target job</h2><p>Enter a public job-posting URL or paste the full job description. Copilot will use it to regenerate this review.</p><label for="job-input">Job posting URL or description</label><textarea id="job-input" name="job" required placeholder="https://company.com/jobs/... or paste the full job description"></textarea><p class="job-update-status" id="job-update-status" role="status"></p><div class="dialog-actions"><button type="button" id="cancel-job">Cancel</button><button type="submit" class="submit-job">Save update request</button></div></form></dialog>
+<aside class="review-panel" aria-label="Review annotations"><section class="target-job"><div class="target-job-heading"><h2>{escape(target_job['title'])} · {escape(target_job['company'])}</h2><button type="button" class="change-job" id="change-job">Change job</button></div><p>{escape(target_job['summary'])}</p><p class="job-source">Source: {job_source}</p><div class="match-counts" aria-label="Job requirement match summary"><span><b>{match_counts['strong-match']}</b> strong</span><span><b>{match_counts['partial-match']}</b> partial</span><span><b>{match_counts['gap']}</b> gaps</span></div></section><h2 class="panel-heading">Job requirement match</h2>{''.join(job_cards)}<section class="strengths"><h2>What already works</h2><ul>{strengths_html}</ul>{unmatched_notice}</section>{feedback_heading}{''.join(cards)}<h2 class="panel-heading">Bullet-by-bullet content review</h2>{''.join(bullet_cards)}</aside></main>
+<dialog class="job-dialog" id="job-dialog"><form id="job-update-form"><h2>Change target job</h2><p>{job_dialog_description}</p><label for="job-input">Job posting URL or description</label><textarea id="job-input" name="job" required placeholder="https://company.com/jobs/... or paste the full job description"></textarea><p class="job-update-status" id="job-update-status" role="status"></p><div class="dialog-actions"><button type="button" id="cancel-job">Cancel</button><button type="submit" class="submit-job">{job_submit_label}</button></div></form></dialog>
 <script>
-function selectNote(id){{document.querySelectorAll('.selected').forEach(el=>el.classList.remove('selected'));const note=document.getElementById(id);const target=document.querySelector(`[data-notes~="${{id}}"]`);note?.classList.add('selected');target?.classList.add('selected');note?.scrollIntoView({{behavior:'smooth',block:'nearest'}})}}
+function applySeverityFilter(severity){{let shown=0;document.querySelectorAll('.annotation').forEach(note=>{{const visible=severity==='all'||note.classList.contains(severity);note.hidden=!visible;if(visible)shown++}});document.querySelectorAll('.resume-block[data-notes]').forEach(block=>{{const badges=block.querySelectorAll('[data-note]');badges.forEach(badge=>{{badge.hidden=document.getElementById(badge.dataset.note)?.hidden||false}});block.classList.toggle('filtered-annotation',severity!=='all'&&![...badges].some(badge=>!badge.hidden))}});document.querySelectorAll('[data-severity-filter]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.severityFilter===severity)));const label=severity==='all'?'all':severity;document.getElementById('filter-status').textContent=`Showing ${{shown}} ${{label}} suggestions.`}}
+document.querySelectorAll('[data-severity-filter]').forEach(button=>button.addEventListener('click',()=>applySeverityFilter(button.dataset.severityFilter)));
+function selectNote(id){{const note=document.getElementById(id);if(note?.hidden)applySeverityFilter('all');document.querySelectorAll('.selected').forEach(el=>el.classList.remove('selected'));const target=document.querySelector(`[data-notes~="${{id}}"]`);note?.classList.add('selected');target?.classList.add('selected');note?.scrollIntoView({{behavior:'smooth',block:'nearest'}})}}
 function selectBulletNote(id){{document.querySelectorAll('.selected').forEach(el=>el.classList.remove('selected'));const note=document.getElementById(id);const target=document.querySelector(`[data-bullet-review="${{id}}"]`);note?.classList.add('selected');target?.classList.add('selected');note?.scrollIntoView({{behavior:'smooth',block:'nearest'}})}}
 function selectJobNote(id){{document.querySelectorAll('.selected').forEach(el=>el.classList.remove('selected'));const note=document.getElementById(id);const targets=[...document.querySelectorAll(`[data-job-matches~="${{id}}"]`)];note?.classList.add('selected');targets.forEach(target=>target.classList.add('selected'));note?.scrollIntoView({{behavior:'smooth',block:'nearest'}})}}
 document.querySelectorAll('[data-note]').forEach(button=>button.addEventListener('click',()=>selectNote(button.dataset.note)));
@@ -497,7 +505,7 @@ document.querySelectorAll('.job-match').forEach(note=>note.addEventListener('cli
 const jobDialog=document.getElementById('job-dialog');const jobForm=document.getElementById('job-update-form');const jobInput=document.getElementById('job-input');const jobStatus=document.getElementById('job-update-status');
 document.getElementById('change-job').addEventListener('click',()=>{{jobStatus.textContent='';jobStatus.className='job-update-status';jobDialog.showModal();jobInput.focus()}});
 document.getElementById('cancel-job').addEventListener('click',()=>jobDialog.close());
-jobForm.addEventListener('submit',async event=>{{event.preventDefault();const submit=jobForm.querySelector('[type="submit"]');submit.disabled=true;jobStatus.textContent='Saving update request...';jobStatus.className='job-update-status';try{{const token=document.querySelector('meta[name="review-update-token"]')?.content;if(!token)throw new Error('Open this review through its local preview server to update the job.');const response=await fetch('/update-job',{{method:'POST',headers:{{'Content-Type':'application/json','X-Review-Token':token}},body:JSON.stringify({{source:jobInput.value}})}});const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not save the job update.');jobStatus.textContent='Saved. Return to Copilot Chat and say: Apply the job update from the preview.';jobStatus.className='job-update-status success'}}catch(error){{jobStatus.textContent=error.message;jobStatus.className='job-update-status error'}}finally{{submit.disabled=false}}}});
+jobForm.addEventListener('submit',async event=>{{event.preventDefault();const submit=jobForm.querySelector('[type="submit"]');submit.disabled=true;jobStatus.textContent='Saving update request...';jobStatus.className='job-update-status';try{{const token=document.querySelector('meta[name="review-update-token"]')?.content;if(!token)throw new Error('Open this review through its local preview server to update the job.');const response=await fetch({json.dumps(update_url)},{{method:'POST',headers:{{'Content-Type':'application/json','X-Review-Token':token}},body:JSON.stringify({{source:jobInput.value}})}});const result=await response.json();if(!response.ok)throw new Error(result.error||'Could not save the job update.');if(result.redirect_url){{window.location.assign(result.redirect_url);return;}}jobStatus.textContent='Saved. Return to Copilot Chat and say: Apply the job update from the preview.';jobStatus.className='job-update-status success'}}catch(error){{jobStatus.textContent=error.message;jobStatus.className='job-update-status error'}}finally{{submit.disabled=false}}}});
 </script></body></html>'''
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(html, encoding="utf-8")
@@ -584,13 +592,23 @@ def serve(path: Path, resume_path: Path, review_path: Path, port: int) -> None:
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("resume", type=Path)
+    parser.add_argument("resume", type=Path, nargs="?")
     parser.add_argument("review", type=Path, nargs="?", help="Structured review JSON")
     parser.add_argument("--extract", action="store_true", help="Print visible resume blocks as JSON")
     parser.add_argument("--output", type=Path)
     parser.add_argument("--serve", action="store_true")
     parser.add_argument("--port", type=int, default=0)
+    parser.add_argument("--provider", choices=("auto", "codex", "claude", "cursor", "copilot"), default="auto",
+                        help="AI connection for the upload app; auto detects the launching terminal")
+    parser.add_argument("--open", action="store_true", help="Open the upload screen in your browser")
     args = parser.parse_args()
+    if args.resume is None:
+        if args.extract or args.review or args.output:
+            parser.error("a resume is required for extraction or rendering")
+        sys.path.insert(0, str(Path(__file__).resolve().parent))
+        from review_app import serve_app
+        serve_app(port=args.port, provider=args.provider, open_browser=args.open)
+        return 0
     if args.extract:
         try:
             blocks = extract_blocks(args.resume)
