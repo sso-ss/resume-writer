@@ -4,6 +4,8 @@
 
 Create and tailor Product Designer resumes, or review an existing resume against a target job. The writing workflow produces an editable HTML preview with Word and PDF exports in five layouts. Resume Review supports different professions and provides feedback linked to exact resume evidence.
 
+> **Always review the result yourself before using it.** AI can miss important context, make mistakes, or suggest wording that overstates your experience. Check every claim, date, metric, link, and job-specific suggestion against your own records, then inspect the exported file for layout issues. You are responsible for the final resume and application.
+
 ## Quick Start (npm)
 
 Install [Node.js 20 or newer](https://nodejs.org/), then run:
