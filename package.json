@@ -1,6 +1,6 @@
 {
   "name": "@sso_ss/resume-writer",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Review resumes against jobs and preview editable resumes with Word and PDF exports. Python setup is automatic.",
   "type": "module",
   "license": "UNLICENSED",
@@ -16,7 +16,13 @@
   },
   "homepage": "https://github.com/sso-ss/resume-writer#readme",
   "bugs": "https://github.com/sso-ss/resume-writer/issues",
-  "keywords": ["resume", "cv", "resume-review", "product-designer", "cli"],
+  "keywords": [
+    "resume",
+    "cv",
+    "resume-review",
+    "product-designer",
+    "cli"
+  ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.npmjs.org/"
