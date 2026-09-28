@@ -6,6 +6,7 @@ import json
 import re
 import secrets
 import tempfile
+import webbrowser
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 
@@ -137,10 +138,13 @@ def main():
     parser.add_argument("html", nargs="?")
     parser.add_argument("--layout", choices=WORD_BUILDERS, default="editorial-html")
     parser.add_argument("--port", type=int, default=0)
+    parser.add_argument("--open", action="store_true", help="Open the preview in your browser")
     args = parser.parse_args()
     html_path = build_html(args.markdown, args.html, args.layout)
     server = create_server(html_path, args.layout, args.port)
     print(f"Resume preview: http://127.0.0.1:{server.server_port}/", flush=True)
+    if args.open:
+        webbrowser.open(f"http://127.0.0.1:{server.server_port}/")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

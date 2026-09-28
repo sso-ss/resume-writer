@@ -1,8 +1,61 @@
 [🇺🇸 English](README.md) | 🇰🇷 한국어
 
-# Product Designer 이력서 작성기
+# 이력서 작성 및 리뷰
 
-AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HTML 형식으로 만들어 드립니다. 인터뷰를 통해 정보를 수집하고, 본인의 기여, 디자인 판단, 확인 가능한 근거를 바탕으로 성과를 작성한 뒤, 5가지 레이아웃 중 선택하여 내보냅니다.
+Product Designer 이력서를 작성·맞춤 수정하거나, 기존 이력서를 타겟 채용공고와 비교해 리뷰합니다. 작성 워크플로는 5가지 레이아웃의 편집 가능한 HTML 미리보기와 Word·PDF 내보내기를 제공합니다. Resume Review는 다양한 직무를 지원하며, 이력서의 정확한 근거 문장에 연결된 피드백을 보여줍니다.
+
+## 빠른 시작 (npm)
+
+[Node.js 20 이상](https://nodejs.org/)을 설치한 뒤 다음 명령을 실행하세요.
+
+```sh
+npx @sso_ss/resume-writer
+```
+
+앱 파일을 내려받고 전용 Python 환경과 의존성을 자동으로 준비한 뒤 브라우저에서 Resume Review를 엽니다. 저장소 복제, Python 수동 설치, 가상환경 활성화가 필요하지 않습니다. 설치된 AI 도구를 선택하고 `.md` 또는 `.docx` 이력서와 채용공고 URL이나 전체 내용을 추가하세요.
+
+리뷰에는 기존 AI 계정을 사용합니다. [연결 설정 안내](https://github.com/sso-ss/resume-writer/blob/main/.github/skills/resume-review/references/provider-setup.md)에 따라 Codex, Claude Code, Cursor Agent, GitHub Copilot 중 하나의 CLI를 설치하고 로그인하세요. 에디터 로그인과 CLI 로그인은 다를 수 있습니다.
+
+```sh
+# 특정 AI 도구로 리뷰
+npx @sso_ss/resume-writer review --provider claude
+
+# Markdown 이력서를 편집하고 Word 또는 PDF로 다운로드
+npx @sso_ss/resume-writer preview "YourName_Resume.md"
+
+# 서버를 열지 않고 PDF를 포함한 실행 환경 준비
+npx @sso_ss/resume-writer setup --pdf
+```
+
+미리보기는 첫 실행 시 Chromium과 PDF 의존성도 자동 설치합니다. 이후 실행에서는 내려받은 파일을 재사용합니다. 첫 설치에는 인터넷이 필요하며 몇 분 걸릴 수 있습니다. Linux에서는 Chromium 실행에 시스템 라이브러리가 추가로 필요할 수 있으며, 오류 메시지에서 누락된 패키지를 안내합니다. 사용 중에는 터미널을 유지하고 종료하려면 Ctrl+C를 누르세요. `--no-open`을 추가하면 브라우저를 열지 않고 로컬 URL만 표시하며, `--help`로 옵션을 확인할 수 있습니다.
+
+명령을 전역으로 설치하려면:
+
+```sh
+npm install -g @sso_ss/resume-writer
+resume-writer
+```
+
+실행 환경은 macOS의 `~/Library/Caches/resume-writer`, Linux의 `$XDG_CACHE_HOME/resume-writer` 또는 `~/.cache/resume-writer`, Windows의 `%LOCALAPPDATA%\resume-writer`에 저장됩니다. `RESUME_WRITER_HOME`으로 위치를 바꿀 수 있습니다. [Astral의 uv](https://docs.astral.sh/uv/reference/installer/)를 내려받아 Python을 관리하며 셸 설정을 변경하지 않습니다. 업로드와 리뷰는 실행한 폴더 아래의 `output/reviews/uploads/`에 보관되고 실행 환경 캐시와 분리됩니다.
+
+### 저장소에서 직접 실행
+
+AI 도구에서 이 저장소를 열면 아래 작성·리뷰 스킬을 사용할 수 있습니다. npm 전역 설치 없이 실행기를 체험하려면:
+
+```sh
+node bin/resume-writer.mjs
+node bin/resume-writer.mjs preview Jennifer_Lauren_Resume.md
+```
+
+Python 스크립트를 직접 실행하려면 한 번만 환경을 준비하세요.
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+Windows에서는 `py -m venv .venv`로 환경을 만들고 PowerShell에서 `.venv\Scripts\Activate.ps1`로 활성화합니다. 필요하면 아래의 `python3`를 `python`으로 바꾸세요. Python 스크립트를 직접 실행할 때는 환경을 활성화한 상태로 유지하세요.
 
 ## 등록된 스킬
 
@@ -17,17 +70,17 @@ AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HT
 
 ## 주요 기능
 
-- **처음부터 이력서 작성** — 몇 가지 질문에 답하면 완성된 `.docx` 파일 제공
+- **처음부터 이력서 작성** — 질문에 답하고 미리보기를 검토한 뒤 Word 또는 PDF로 내보내기
 - **기존 정보 붙여넣기** — 경력 정보를 붙여넣으면 바로 이력서 생성
 - **타겟 채용공고와 이력서 매칭** — 요구사항별 매칭과 모든 경력·프로젝트 bullet 분석을 HTML 주석으로 제공
-- **채용공고 맞춤화** — 특정 채용공고의 키워드를 반영
+- **채용공고 맞춤화** — 실제 경험으로 뒷받침되는 관련 경력과 키워드를 강조
 - **5가지 레이아웃** — 단일 컬럼(ATS 호환), 2단 좌측 사이드바, 2단 우측 사이드바, 개선된 2단 우측 사이드바, 편집 가능한 HTML
 
 ---
 
 ## 설치 방법
 
-> **참고:** `.docx` 내보내기에 Python 3이 필요합니다. 에이전트가 자동으로 확인하고, 설치가 필요한 경우 안내해 드립니다. macOS 사용자는 이미 설치되어 있을 수 있습니다.
+[npm 빠른 시작](#빠른-시작-npm)은 Python과 내보내기 의존성을 자동으로 준비합니다. 아래는 AI 에디터나 CLI에서 저장소 스킬을 사용하는 방법입니다. Python 명령을 직접 실행할 때는 위의 가상환경 설정이 필요합니다. 브라우저 리뷰에는 지원되는 AI CLI의 설치와 로그인이 필요합니다.
 
 ---
 
@@ -119,27 +172,48 @@ AI 에이전트가 Product Designer 이력서를 Word 또는 편집 가능한 HT
 | **2단 좌측** | `two-column-left` | 포트폴리오 스타일, 직접 지원 |
 | **2단 우측** | `two-column-right` | F패턴 읽기, 네트워킹, 직접 전달 |
 | **개선된 2단 우측** | `two-column-right-refined` | 전체 너비 요약 및 균형 잡힌 사이드바, 직접 전달 |
-| **에디토리얼 HTML** | `editorial-html` | 브라우저에서 편집 후 PDF로 인쇄하여 직접 전달 |
+| **에디토리얼 HTML** | `editorial-html` | 브라우저에서 편집 후 Word·PDF로 내보내 직접 전달 |
 
 > **ATS 주의사항:** 2단 레이아웃은 ATS 파싱 정확도가 떨어질 수 있습니다. 채용 사이트나 회사 채용 페이지를 통해 지원할 때는 `single-column`을 사용하세요.
+
+작성 워크플로는 `single-column`을 권장합니다. 미리보기 스크립트에서 `--layout`을 생략하면 `editorial-html`이 기본값입니다.
 
 `python3 .github/skills/resume-writing/scripts/serve_resume.py 이름_Resume.md --layout single-column`을 실행하고 `single-column`을 초기 레이아웃으로 바꾸세요. 미리보기의 Template 메뉴에서 레이아웃을 비교하고 Accent 색상 선택기로 제목과 링크 색상을 바꿀 수 있습니다. Word와 PDF에는 현재 레이아웃, 선택한 강조색, 브라우저 수정 내용이 적용됩니다. 사이드바의 중립 배경색은 유지됩니다. 생성된 미리보기는 리뷰 앱과 동일한 흰색·연회색 화면, 검은색 버튼, 절제된 라임색 강조를 기본으로 사용합니다. Accent 선택은 이력서에 적용되며 미리보기 조작부의 기본 스타일은 유지됩니다. 검토와 다운로드 중에는 서버를 실행 상태로 유지하세요. 브라우저, Word, PDF 렌더링은 조금 다를 수 있습니다. `file://` HTML은 Python 내보내기를 실행할 수 없고, 브라우저 수정 내용은 원본 Markdown에 자동 반영되지 않습니다.
 
 이력서 리뷰는 편집 가능한 내보내기 미리보기와 별도입니다. Markdown 또는 Word 이력서와 타겟 채용공고 URL이나 전체 채용공고 내용을 제공해야 하며, 채용공고가 없으면 에이전트가 리뷰 전에 요청합니다. 주요 요구사항을 추출해 강한 매칭, 부분 매칭, 이력서에서 확인되지 않는 항목을 보여주는 HTML 페이지가 열립니다. 모든 매칭은 이력서의 정확한 근거 문장에 연결되며, 모든 경력 및 프로젝트 bullet은 해당 역할에 맞춰 주도성, 범위, 방법, 결과, 근거, 명확성을 평가받습니다. 같은 이력서에 다른 URL이나 채용공고 내용을 제공하면 매칭 분석을 새로 생성할 수 있습니다. 이는 정성적 리뷰이며 ATS 인증이나 숫자 기반 적합도 점수가 아닙니다.
 
-## 브라우저에서 리뷰 시작하기
+## Resume Review
+
+### 브라우저에서 리뷰 시작하기
 
 ```sh
 python3 .github/skills/resume-review/scripts/render_review.py
 ```
 
-파일 인수 없이 실행하면 시작 화면의 로컬 URL이 표시됩니다. `.docx` 또는 `.md` 이력서(최대 5 MB)를 끌어 놓거나 파일 선택으로 추가한 뒤, 채용공고 URL이나 전체 내용을 입력하세요. **Review my resume**를 누르면 타겟 직무에 맞춘 리뷰 스킬을 읽어 분석하고, 근거 문장과 bullet 누락 여부를 검증한 후 리뷰를 자동으로 엽니다. 진행 상태, 오류 후 재시도, 새로고침 후 진행 중인 리뷰 재연결을 지원합니다. **Change job**은 같은 이력서를 새 공고로 다시 분석합니다.
+파일 인수 없이 실행하면 시작 화면의 로컬 URL이 표시됩니다. `.docx` 또는 `.md` 이력서(최대 5 MB)를 끌어 놓거나 파일 선택으로 추가한 뒤, 채용공고 URL이나 전체 내용을 입력하세요. **Review my resume**를 누르면 타겟 직무에 맞춘 리뷰 스킬을 읽어 분석하고, 근거 문장과 bullet 누락 여부를 검증한 후 리뷰를 자동으로 엽니다. 진행 상태, 오류 후 재시도, 새로고침 후 진행 중인 리뷰 재연결을 지원합니다. **Change job**은 같은 이력서를 새 공고로 다시 분석하고, **Review another resume**은 시작 화면으로 돌아갑니다.
 
 리뷰는 다양한 직무를 지원하며, 포트폴리오, 디자인 방법, 자격증은 해당 직무와 관련될 때만 평가합니다. 별도의 이력서 작성 워크플로는 계속 프로덕트 디자이너에 맞춰져 있습니다.
 
 분석 시에는 스킬의 공통 평가 기준만 읽고 채팅용 파일 저장·화면 열기 지침은 제외합니다. 앱이 이력서 블록에 ID를 부여하고 분석 결과의 ID를 원문으로 복원하여 반복 텍스트를 줄입니다. 모든 경력·프로젝트 불릿과 근거 검증은 유지하며 기존 리뷰도 계속 열 수 있습니다. 업로드 폴더의 `metrics.json`에 처리 시간, 시도 횟수, 입출력 글자 수를 저장합니다. 글자 수는 토큰 사용량이 아니며 처리 시간은 문서, 공고 접근, 모델에 따라 달라집니다.
 
 자동 분석에는 `python-docx`가 설치된 Python과 로그인된 Codex CLI, Claude Code, Cursor Agent CLI 또는 GitHub Copilot CLI가 필요합니다. 선택한 CLI에 설정된 모델과 계정을 사용하며 일반 사용량 제한이 적용됩니다. 이력서 텍스트와 채용공고는 선택한 AI 서비스로 전송됩니다. 업로드와 결과는 Git에서 제외된 `output/reviews/uploads/`에 보관되며 직접 삭제할 때까지 유지됩니다. 서버를 실행 상태로 유지하세요. 한 번에 하나의 리뷰를 분석합니다. 공고 URL을 읽을 수 없다면 전체 내용을 붙여넣으세요. 기존 파일 추출 및 리뷰 렌더링 명령도 계속 사용할 수 있습니다.
+
+### 리뷰 스킬 실행과 AI 선택
+
+Codex에서는 `$resume-review`, Claude Code에서는 `/resume-review`로 기존 업로드 화면을 엽니다. 스킬이 해당 도구를 선택해 서버를 시작합니다. 새 스킬이 보이지 않으면 새 세션을 시작하세요. 직접 실행할 때는 `python3 .github/skills/resume-review/scripts/render_review.py --provider codex --open`을 사용하고, `codex`를 `claude`, `cursor`, `copilot`으로 바꿀 수 있습니다. 도구를 확인할 수 없으면 화면에서 선택합니다. 설치 여부와 로그인 여부는 다르며, 계정 접근은 리뷰 시작 시 확인합니다. **Change job**은 원래 선택한 AI를 유지합니다.
+
+각 리뷰는 별도의 분석 세션이므로 원래 대화나 일회성 모델 설정을 그대로 상속하지 않습니다. Cursor는 `--provider cursor`, Copilot은 `--provider copilot`으로 해당 CLI와 계정을 사용합니다. 에디터 로그인과 CLI 로그인은 다를 수 있습니다. [연결 설정 안내](.github/skills/resume-review/references/provider-setup.md)를 참고하세요.
+
+## PDF 다운로드 설정
+
+npm `preview` 명령은 이 설정을 자동 처리합니다. Python으로 직접 실행할 때만 미리보기 서버와 같은 환경에 아래 의존성을 설치하세요.
+
+```sh
+python3 -m pip install -r .github/skills/resume-writing/requirements-pdf.txt
+python3 -m playwright install chromium
+```
+
+**Save as PDF**는 인쇄 대화상자 대신 로컬 Chromium으로 텍스트를 선택할 수 있는 PDF를 다운로드합니다. 브라우저 수정 내용도 포함됩니다. 다운로드한 파일의 페이지 수를 확인하세요. 텍스트 선택이 가능하더라도 ATS 호환성이 보장되지는 않습니다.
 
 ## 프롬프트 예시
 
@@ -175,37 +249,37 @@ python3 .github/skills/resume-review/scripts/render_review.py
 
 ## 프로젝트 구조
 
-```
+```text
 Resume/
-├── README.md                            ← English guide
-├── README.ko.md                         ← 한국어 가이드 (현재 파일)
+├── README.md
+├── README.ko.md
+├── package.json                        # npm 패키지와 명령
+├── bin/resume-writer.mjs                # 명령 진입점
+├── lib/                                # CLI와 자동 실행 환경 설정
+├── requirements.txt                    # 기본 Python 의존성
+├── .agents/skills/                     # Codex용 공통 스킬 링크
 ├── .claude/
-│   └── commands/
-│       └── resume-writer.md             ← Claude Code 슬래시 명령어
+│   ├── commands/resume-writer.md        # 기존 Claude 명령
+│   └── skills/                         # 작성 스킬 링크와 리뷰 실행기
 ├── .cursor/
-│   └── rules/
-│       └── resume-writer.mdc            ← Cursor 에이전트 규칙
+│   ├── rules/resume-writer.mdc          # Cursor 에이전트 규칙
+│   └── skills/                         # 작성 스킬 링크와 리뷰 실행기
 ├── .github/
-│   ├── agents/
-│   │   └── resume-writer.agent.md       ← VS Code Copilot 에이전트
+│   ├── agents/resume-writer.agent.md    # Copilot 에이전트
 │   └── skills/
-│       ├── resume-review/                ← 주석이 포함된 HTML 리뷰 워크플로
+│       ├── resume-review/
+│       │   ├── SKILL.md
+│       │   ├── references/             # 리뷰 기준과 AI 연결 안내
+│       │   ├── scripts/                # 업로드 앱, 렌더러, 테스트
+│       │   └── templates/              # 업로드 화면과 리뷰 스타일
 │       └── resume-writing/
-│       ├── SKILL.md                     ← 작성 절차 및 근거 중심 가이드
-│       ├── references/
-│       │   └── recruiter-guidelines.md  ← 항목별 작성 규칙
-│       └── scripts/
-│           ├── to_docx.py               ← 단일 컬럼 변환기
-│           ├── to_docx_two_column.py    ← 2단 좌측 변환기
-│           ├── to_docx_right_sidebar.py         ← 2단 우측 변환기
-│           ├── to_docx_right_sidebar_refined.py ← 개선된 2단 우측 변환기
-│           └── to_html_editorial.py             ← 에디토리얼 HTML 변환기
-└── {이름}_Resume.md                     ← 생성된 이력서 (Markdown)
-└── {이름}_ProductDesigner_Resume.docx   ← 생성된 이력서 (Word)
+│           ├── SKILL.md
+│           ├── references/             # 작성 가이드
+│           ├── requirements-pdf.txt
+│           ├── scripts/                # 미리보기 서버, 변환기, 테스트
+│           └── templates/              # 편집 가능한 HTML 템플릿
+├── Jennifer_Lauren_Resume.md            # 가상 콘텐츠 예시
+└── output/reviews/uploads/             # 로컬 리뷰 데이터 (Git 제외)
 ```
 
-### 리뷰 스킬 실행과 AI 선택
-
-Codex에서는 `$resume-review`, Claude Code에서는 `/resume-review`로 기존 업로드 화면을 엽니다. 스킬이 해당 도구를 선택해 서버를 시작합니다. 새 스킬이 보이지 않으면 새 세션을 시작하세요. 직접 실행할 때는 `render_review.py --provider codex --open` 또는 `--provider claude --open`을 사용합니다. 도구를 확인할 수 없으면 화면에서 선택합니다. 설치 여부와 로그인 여부는 다르며, 계정 접근은 리뷰 시작 시 확인합니다. **Change job**은 원래 선택한 AI를 유지합니다.
-
-각 리뷰는 별도의 분석 세션이므로 원래 대화나 일회성 모델 설정을 그대로 상속하지 않습니다. Cursor는 `--provider cursor`, Copilot은 `--provider copilot`으로 해당 CLI와 계정을 사용합니다. 에디터 로그인과 CLI 로그인은 다를 수 있습니다. [연결 설정 안내](.github/skills/resume-review/references/provider-setup.md)를 참고하세요.
+공통 구현은 `.github/skills`에 있습니다. 저장소를 복제할 때 심볼릭 링크를 유지하거나, 공통 스킬 폴더 전체를 해당 도구의 스킬 폴더로 복사하세요. `SKILL.md`만 복사하면 필요한 스크립트와 템플릿이 누락됩니다.

@@ -1,0 +1,50 @@
+{
+  "name": "@sso_ss/resume-writer",
+  "version": "0.1.0",
+  "description": "Review resumes against jobs and preview editable resumes with Word and PDF exports. Python setup is automatic.",
+  "type": "module",
+  "license": "UNLICENSED",
+  "bin": {
+    "resume-writer": "bin/resume-writer.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sso-ss/resume-writer.git"
+  },
+  "homepage": "https://github.com/sso-ss/resume-writer#readme",
+  "bugs": "https://github.com/sso-ss/resume-writer/issues",
+  "keywords": ["resume", "cv", "resume-review", "product-designer", "cli"],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "test:packed": "node test/packed-smoke.mjs",
+    "prepublishOnly": "npm test"
+  },
+  "files": [
+    "bin/",
+    "lib/",
+    "requirements.txt",
+    "README.ko.md",
+    ".github/skills/resume-review/SKILL.md",
+    ".github/skills/resume-review/references/",
+    ".github/skills/resume-review/templates/",
+    ".github/skills/resume-review/scripts/render_review.py",
+    ".github/skills/resume-review/scripts/review_app.py",
+    ".github/skills/resume-writing/SKILL.md",
+    ".github/skills/resume-writing/references/",
+    ".github/skills/resume-writing/templates/",
+    ".github/skills/resume-writing/requirements-pdf.txt",
+    ".github/skills/resume-writing/scripts/serve_resume.py",
+    ".github/skills/resume-writing/scripts/docx_shared.py",
+    ".github/skills/resume-writing/scripts/to_docx*.py",
+    ".github/skills/resume-writing/scripts/to_html_editorial.py",
+    ".github/skills/resume-writing/scripts/to_pdf_editorial.py",
+    ".github/skills/resume-writing/scripts/word-export.js"
+  ]
+}

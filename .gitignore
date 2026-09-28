@@ -1,3 +1,7 @@
 ~$*
 Jennifer_Lauren_*
 output/reviews/uploads/
+.venv/
+node_modules/
+*.tgz
+__pycache__/

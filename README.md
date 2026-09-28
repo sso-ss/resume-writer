@@ -1,8 +1,61 @@
 🇺🇸 English | [🇰🇷 한국어](README.ko.md)
 
-# Product Designer Resume Writer
+# Resume Writer & Review
 
-An AI agent that creates Product Designer resumes in Word or editable HTML format. It interviews you, writes relevant achievements grounded in ownership, design decisions, and credible evidence, and exports your choice of 5 layouts.
+Create and tailor Product Designer resumes, or review an existing resume against a target job. The writing workflow produces an editable HTML preview with Word and PDF exports in five layouts. Resume Review supports different professions and provides feedback linked to exact resume evidence.
+
+## Quick Start (npm)
+
+Install [Node.js 20 or newer](https://nodejs.org/), then run:
+
+```sh
+npx @sso_ss/resume-writer
+```
+
+This downloads the app, sets up a private Python environment and its dependencies, and opens Resume Review in your browser. No repository clone, manual Python install, or environment activation is needed. Choose an installed AI provider, upload a `.md` or `.docx` resume, and add the target job URL or full description.
+
+The review app uses your existing AI account. Install and sign in to one supported CLI—Codex, Claude Code, Cursor Agent, or GitHub Copilot—using the [provider setup guide](https://github.com/sso-ss/resume-writer/blob/main/.github/skills/resume-review/references/provider-setup.md). An editor login alone may not sign in its CLI.
+
+```sh
+# Review with a specific AI provider
+npx @sso_ss/resume-writer review --provider claude
+
+# Edit your Markdown resume and download Word or PDF
+npx @sso_ss/resume-writer preview "YourName_Resume.md"
+
+# Prepare everything, including PDF export, without starting a server
+npx @sso_ss/resume-writer setup --pdf
+```
+
+Preview automatically installs Chromium and the PDF dependencies on first use. Downloads are reused on later launches. First setup needs internet access and may take a few minutes. On Linux, Chromium may additionally require system libraries; its error message lists missing packages. Keep the terminal running while using the app and press Ctrl+C to stop it. Add `--no-open` to print the local URL without opening a browser, or `--help` to see options.
+
+For a permanent command:
+
+```sh
+npm install -g @sso_ss/resume-writer
+resume-writer
+```
+
+The launcher stores its runtime in `~/Library/Caches/resume-writer` on macOS, `$XDG_CACHE_HOME/resume-writer` (or `~/.cache/resume-writer`) on Linux, and `%LOCALAPPDATA%\resume-writer` on Windows. Set `RESUME_WRITER_HOME` to change that location. It downloads [uv from Astral](https://docs.astral.sh/uv/reference/installer/) to manage Python without changing your shell configuration. Uploads and reviews are saved in `output/reviews/uploads/` under the directory where you run the command; they are separate from the runtime cache.
+
+### Run from this repository
+
+Open this repository in your AI tool to use the writing and review skills below. To try the npm launcher before installing it:
+
+```sh
+node bin/resume-writer.mjs
+node bin/resume-writer.mjs preview Jennifer_Lauren_Resume.md
+```
+
+For direct Python use, prepare an environment once:
+
+```sh
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+On Windows, create the environment with `py -m venv .venv` and activate it with `.venv\Scripts\Activate.ps1` in PowerShell. Use `python` instead of `python3` below if needed. Keep the environment active when launching Python scripts directly.
 
 ## Available Skills
 
@@ -17,17 +70,17 @@ Claude's existing `/resume-writer` command remains available. In Cursor or Copil
 
 ## What It Does
 
-- **Creates resumes from scratch** — answers a few questions, gets a finished `.docx`
+- **Creates resumes from scratch** — answer a few questions, review the preview, and export Word or PDF
 - **Rewrites from a paste** — dump your career info and it builds the resume immediately
 - **Matches resumes to target jobs** — annotated requirement matches plus content analysis for every experience and project bullet
-- **Tailors to job postings** — mirrors keywords from a specific listing
+- **Tailors to job postings** — emphasizes relevant experience and supported keywords from a specific listing
 - **5 layout options** — single-column (ATS-safe), two-column left sidebar, classic right sidebar, refined right sidebar, editable editorial HTML
 
 ---
 
 ## Setup
 
-> **Note:** Python 3 is needed for `.docx` export. The agent will check automatically and guide you through installation if it's missing. macOS users likely already have it.
+The [npm quick start](#quick-start-npm) handles the app’s Python and export dependencies automatically. The options below describe using repository skills in an AI editor or CLI. Direct Python commands require the environment described above. Browser review also requires a supported AI CLI installed and signed in.
 
 ---
 
@@ -119,13 +172,17 @@ The agent uses a preview-first flow:
 | **Two-Column Left** | `two-column-left` | Portfolio-style feel, direct applications |
 | **Two-Column Right** | `two-column-right` | F-pattern reading, networking, direct outreach |
 | **Two-Column Right Refined** | `two-column-right-refined` | Full-width summary and balanced sidebar, direct outreach |
-| **Editorial HTML** | `editorial-html` | Editable browser layout, print to PDF for direct sharing |
+| **Editorial HTML** | `editorial-html` | Editable browser layout with Word and PDF export for direct sharing |
 
 > **ATS Warning:** Two-column layouts may reduce ATS parsing accuracy. Use `single-column` when applying through job boards or company career pages.
+
+The writing workflow recommends `single-column`; the preview script defaults to `editorial-html` if `--layout` is omitted.
 
 Run `python3 .github/skills/resume-writing/scripts/serve_resume.py YourName_Resume.md --layout single-column`, replacing `single-column` with your initial layout. Use the Template menu to compare layouts and the Accent picker to change heading/link color; Word and PDF exports include the selected layout, accent, and browser edits. The neutral sidebar background stays fixed. Generated previews share the review app’s white and light-gray interface, black action buttons, and restrained lime accents. The Accent picker changes the resume; preview controls keep their default style. Keep the server running while reviewing and downloading. Rendering can differ slightly between browser, Word, and PDF. Standalone `file://` HTML cannot invoke Python, and browser edits do not change the original Markdown.
 
 Resume review is separate from the editable export preview. Upload a Markdown or Word resume with a target job URL or the full pasted job description; if the posting is missing, the agent asks for it before reviewing. The agent extracts the role's main requirements and opens an HTML page showing strong matches, partial matches, and requirements not demonstrated in the resume. Every match links to exact resume evidence, and every Experience and Projects bullet receives role-specific feedback on ownership, scope, method, outcome, evidence, and clarity. Provide another URL or pasted description at any time to regenerate the matching analysis for the same resume. This is a qualitative review, not an ATS certification or numeric match score.
+
+## Resume Review
 
 ### Start a review in the browser
 
@@ -137,7 +194,7 @@ python3 .github/skills/resume-review/scripts/render_review.py
 
 Open the printed local URL. Drag in a `.docx` or `.md` resume (up to 5 MB), or choose it from your files, then add a job posting URL or paste the full description. **Review my resume** starts the analysis and opens the annotated review automatically. The page shows progress, supports retrying after errors, and reconnects to a running review after a reload. **Change job** reruns the analysis for the same resume; **Review another resume** returns to the starting screen.
 
-Automatic analysis requires Python with `python-docx` and an installed, signed-in [Codex CLI](https://developers.openai.com/codex/cli/) , [Claude Code](https://code.claude.com/docs/en/overview), [Cursor Agent CLI](https://cursor.com/docs/cli/overview), or [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/cli-getting-started). The selected CLI uses its own account and configured model; normal usage limits apply. It runs a separate analysis session, so it does not inherit the launching conversation or necessarily its model override. Each request loads the skill’s shared review criteria, adapted to the target job, without chat-only workflow instructions. Reviews support different professions; portfolios, design methods, and credentials are assessed only when relevant. The separate resume-writing workflow remains tailored to product designers. Codex runs read-only; Claude is restricted to web-reading tools with no shell/edit tools or configured MCP servers. Cursor uses Ask mode with shell/write/MCP operations denied; Copilot exposes only web fetching. All return structured findings; the app checks quotes and bullet coverage before displaying the result. If a job URL cannot be read, paste the full description.
+Automatic analysis requires Python with `python-docx` and an installed, signed-in [Codex CLI](https://developers.openai.com/codex/cli/), [Claude Code](https://code.claude.com/docs/en/overview), [Cursor Agent CLI](https://cursor.com/docs/cli/overview), or [GitHub Copilot CLI](https://docs.github.com/en/copilot/how-tos/copilot-cli/cli-getting-started). The selected CLI uses its own account and configured model; normal usage limits apply. It runs a separate analysis session, so it does not inherit the launching conversation or necessarily its model override. Each request loads the skill’s shared review criteria, adapted to the target job, without chat-only workflow instructions. Reviews support different professions; portfolios, design methods, and credentials are assessed only when relevant. The separate resume-writing workflow remains tailored to product designers. Codex runs read-only; Claude is restricted to web-reading tools with no shell/edit tools or configured MCP servers. Cursor uses Ask mode with shell/write/MCP operations denied; Copilot exposes only web fetching. All return structured findings; the app checks quotes and bullet coverage before displaying the result. If a job URL cannot be read, paste the full description.
 
 The app assigns resume block IDs before analysis and restores exact text from those IDs afterward, reducing repeated text in the response. Full bullet coverage and evidence validation remain required; existing saved reviews remain compatible. Each upload folder includes `metrics.json` with elapsed time, attempt count, and input/output character counts for comparison. These are character counts, not token usage; timing varies with the resume, posting access, and configured model.
 
@@ -151,10 +208,10 @@ Resume text and job details are sent to the selected AI provider for analysis. U
 - **GitHub Copilot:** the resume-writer agent/shared skill launches with `--provider copilot`, using GitHub Copilot CLI and the user’s GitHub account.
 - **Unknown terminals:** choose the desired installed AI tool on the screen.
 
-Start a new host session if the new shortcut is not visible. For manual launch, use `--provider codex --open` , `--provider claude --open`, `--provider cursor --open`, or `--provider copilot --open`. Without an explicit provider, an unambiguous terminal marker selects it; otherwise the screen asks. The screen distinguishes a missing executable from an installed tool; sign-in is checked when review begins. **Change job** retains the original provider. See [.github/skills/resume-review/references/provider-setup.md](.github/skills/resume-review/references/provider-setup.md) for setup and adapter details. Do not share localhost links with other users; they launch their own local server.
+Start a new host session if the new shortcut is not visible. For manual launch, use `--provider codex --open`, `--provider claude --open`, `--provider cursor --open`, or `--provider copilot --open`. Without an explicit provider, an unambiguous terminal marker selects it; otherwise the screen asks. The screen distinguishes a missing executable from an installed tool; sign-in is checked when review begins. **Change job** retains the original provider. See [.github/skills/resume-review/references/provider-setup.md](.github/skills/resume-review/references/provider-setup.md) for setup and adapter details. Do not share localhost links with other users; they launch their own local server.
 
-### PDF Download Setup
-Install these dependencies in the same Python environment as the preview server:
+## PDF Download Setup
+The npm `preview` command handles this automatically. For direct Python use, install these dependencies in the same environment as the preview server:
 ```sh
 python3 -m pip install -r .github/skills/resume-writing/requirements-pdf.txt
 python3 -m playwright install chromium
@@ -195,31 +252,37 @@ The current **Save as PDF** button downloads a text-based PDF through local Chro
 
 ## Project Structure
 
-```
+```text
 Resume/
-├── README.md                            ← you are here
-├── README.ko.md                         ← 한국어 가이드
+├── README.md
+├── README.ko.md
+├── package.json                        # npm package and command
+├── bin/resume-writer.mjs                # Command entry point
+├── lib/                                # CLI and automatic runtime setup
+├── requirements.txt                    # Core Python dependencies
+├── .agents/skills/                     # Codex links to the shared skills
 ├── .claude/
-│   └── commands/
-│       └── resume-writer.md             ← Claude Code slash command
+│   ├── commands/resume-writer.md        # Existing Claude command
+│   └── skills/                         # Writing link and review launcher
 ├── .cursor/
-│   └── rules/
-│       └── resume-writer.mdc            ← Cursor agent rule
+│   ├── rules/resume-writer.mdc          # Cursor agent rule
+│   └── skills/                         # Writing link and review launcher
 ├── .github/
-│   ├── agents/
-│   │   └── resume-writer.agent.md       ← VS Code Copilot agent
+│   ├── agents/resume-writer.agent.md    # Copilot agent
 │   └── skills/
-│       ├── resume-review/                ← annotated HTML review workflow
+│       ├── resume-review/
+│       │   ├── SKILL.md
+│       │   ├── references/             # Review rubric and provider setup
+│       │   ├── scripts/                # Upload app, renderer, and tests
+│       │   └── templates/              # Upload screen and review styles
 │       └── resume-writing/
-│       ├── SKILL.md                     ← writing & evidence guidelines
-│       ├── references/
-│       │   └── recruiter-guidelines.md  ← section-by-section rules
-│       └── scripts/
-│           ├── to_docx.py               ← single-column converter
-│           ├── to_docx_two_column.py    ← two-column-left converter
-│           ├── to_docx_right_sidebar.py         ← two-column-right converter
-│           ├── to_docx_right_sidebar_refined.py ← refined right-sidebar converter
-│           └── to_html_editorial.py             ← editorial HTML converter
-└── {Name}_Resume.md                     ← generated resume (Markdown)
-└── {Name}_ProductDesigner_Resume.docx   ← generated resume (Word)
+│           ├── SKILL.md
+│           ├── references/             # Writing guidelines
+│           ├── requirements-pdf.txt
+│           ├── scripts/                # Preview server, converters, and tests
+│           └── templates/              # Editable HTML template
+├── Jennifer_Lauren_Resume.md            # Fictional content example
+└── output/reviews/uploads/             # Local review data (Git-ignored)
 ```
+
+The `.github/skills` directories contain the shared implementations. Preserve symbolic links when cloning, or copy the complete shared skill folder into the appropriate host's skill directory. Copying only `SKILL.md` omits the scripts and templates.
