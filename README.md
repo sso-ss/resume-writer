@@ -2,7 +2,7 @@
 
 # Product Designer Resume Writer
 
-An AI agent that creates Product Designer resumes in Word or editable HTML format. It interviews you, writes metric-driven bullets using the XYZ formula, and exports your choice of 5 layouts.
+An AI agent that creates Product Designer resumes in Word or editable HTML format. It interviews you, writes relevant achievements grounded in ownership, design decisions, and credible evidence, and exports your choice of 5 layouts.
 
 ## What It Does
 
@@ -88,6 +88,18 @@ The agent uses a preview-first flow:
 2. Opens an editable HTML preview matching your selected layout
 3. Generates the matching `.docx` or `.pdf` after you review and export it
 
+## Content Defaults
+
+- **Summary:** Two concise sentences, roughly 30–50 words: positioning plus one achievement relevant to the target role. Optional when it adds no useful information.
+- **Experience:** Personal ownership, design judgment, and supported results. Every bullet needs meaningful evidence; not every bullet needs a number.
+- **Projects:** Omitted for experienced designers when they repeat Experience. Include projects that demonstrate otherwise missing relevant abilities; link case studies beside related work where useful.
+- **Skills:** Compact Design, Research, and Collaboration & Leadership categories, generally 3–4 relevant items each, plus a short Tools line. Keep soft skills visible and demonstrate them in Experience.
+- **AI:** Include supported workflow/product-design capabilities and validation when relevant; add an AI skills line or summary mention only when it helps the application.
+- **Level and length:** Assess seniority by responsibility and scope. Aim for one readable page; allow two when relevant experience warrants it.
+- **Final review:** Check recruiter concerns (fit, chronology, portfolio access) and hiring-manager concerns (ownership, judgment, collaboration, credible impact).
+
+[`Jennifer_Lauren_Resume.md`](Jennifer_Lauren_Resume.md) is a fictional content example, including its employers, education, achievements, and numbers. Its `example.com` links are placeholders, not a live portfolio. It demonstrates the revised writing defaults; older Word examples may reflect previous content. Replace demo claims and links with verified personal information before applying.
+
 ## Layout Options
 
 | Layout | Command | Best For |
@@ -119,7 +131,7 @@ The current **Save as PDF** button downloads a text-based PDF through local Chro
 
 **Paste your info:**
 > Here's my experience, please build a resume:
-> - Senior Product Designer at Spotify, 2021-present
+> - Senior Product Designer at Example Music Co., 2021-present
 > - Led redesign of playlist creation flow, increased saves by 25%
 > - Built design system with 80+ components adopted by 4 teams
 > ...
@@ -139,7 +151,8 @@ The current **Save as PDF** button downloads a text-based PDF through local Chro
 ## Tips for Best Results
 
 - Have your **portfolio URL** ready — the agent asks for it first and treats it as critical
-- Prepare **2-3 achievements with numbers** for each role (e.g., "increased conversion by 15%", "conducted 20 user interviews")
+- Prepare **2–3 relevant achievements** for each role: what you owned, the decision or constraint, what changed, and how you evaluated it. Include verified metrics when available; concrete qualitative evidence is welcome.
+- Describe actual **AI use and validation** when relevant, and give examples of collaboration or leadership. Do not add tools or skills just because a posting mentions them.
 - If you have a **job posting** you're targeting, paste the URL — the agent will tailor your resume to match its keywords
 - Choose `single-column` unless you're sending the resume directly to someone (not through a job board)
 
@@ -161,7 +174,7 @@ Resume/
 │   └── skills/
 │       ├── resume-review/                ← annotated HTML review workflow
 │       └── resume-writing/
-│       ├── SKILL.md                     ← procedures & XYZ formula
+│       ├── SKILL.md                     ← writing & evidence guidelines
 │       ├── references/
 │       │   └── recruiter-guidelines.md  ← section-by-section rules
 │       └── scripts/

@@ -154,8 +154,8 @@ def build_html(md_path: str, html_path: Optional[str] = None, layout: str = "edi
         f'<h1>{escape(name)}</h1><p class="role">{escape(role)}</p>'
     )
     contact = f'<div class="contact">{contact_html(contact_line)}</div>'
-    summary_label = '<h2 class="summary-label">Summary</h2>'
-    intro = f'<p class="intro">{escape(summary)}</p>'
+    summary_label = '<h2 class="summary-label">Summary</h2>' if summary else ""
+    intro = f'<p class="intro">{escape(summary)}</p>' if summary else ""
     main_sections = experience + projects
     sidebar_sections = expertise + tools + recognition + education
     if layout == "single-column":

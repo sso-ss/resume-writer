@@ -9,8 +9,9 @@ function resumeMarkdown(page) {
   const lines = [
     `# ${text(page.querySelector('h1'))}`, '',
     [...page.querySelector('.contact').children].map(text).join(' | '), '',
-    '## Summary', '', text(page.querySelector('.intro')), '',
   ];
+  const summary = text(page.querySelector('.intro'));
+  if (summary) lines.push('## Summary', '', summary, '');
   for (const section of page.querySelectorAll('.layout section')) {
     const sectionName = section.dataset.section || text(section.querySelector('h2'));
     const type = {
@@ -103,16 +104,16 @@ layoutPicker.addEventListener('change', () => {
   sidebar.className = 'sidebar';
   oldLayout.before(header);
   if (layoutPicker.value === 'two-column-left') {
-    header.append(contact, summaryLabel);
+    header.append(...[contact, summaryLabel].filter(Boolean));
     sidebar.append(header, ...sidebarSections);
-    main.append(intro, ...mainSections);
+    main.append(...[intro, ...mainSections].filter(Boolean));
     layout.append(sidebar, main);
   } else if (layoutPicker.value === 'two-column-right') {
     sidebar.append(contact, ...sidebarSections);
-    main.append(intro, ...mainSections);
+    main.append(...[intro, ...mainSections].filter(Boolean));
     layout.append(main, sidebar);
   } else {
-    header.append(contact, summaryLabel, intro);
+    header.append(...[contact, summaryLabel, intro].filter(Boolean));
     main.append(...mainSections);
     if (layoutPicker.value === 'single-column') {
       main.append(...sidebarSections);

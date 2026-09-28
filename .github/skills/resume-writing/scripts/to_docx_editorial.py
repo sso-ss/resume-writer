@@ -177,8 +177,10 @@ def build_layout_editorial(md_path, docx_path=None, *, editorial_header=None):
         if index:
             add_text(result, "    ", 7.5)
         inline_runs(result, contact, color="58605A")
-    result = paragraph(document, after=10.5, line=1.55, size=8.625)
-    inline_runs(result, header.xpath('./p[@class="intro"]')[0], 8.625, color="454E47")
+    summary = header.xpath('./p[@class="intro"]')
+    if summary:
+        result = paragraph(document, after=10.5, line=1.55, size=8.625)
+        inline_runs(result, summary[0], 8.625, color="454E47")
     layout = page.xpath('./div[@class="layout"]')[0]
     table = document.add_table(rows=1, cols=3)
     table.autofit = False

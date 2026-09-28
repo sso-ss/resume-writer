@@ -12,91 +12,57 @@ argument-hint: "Paste your career info, or say 'help me write a resume' to start
 - User has a job posting URL and wants a tailored resume
 - User wants to convert resume content to .docx format
 
+## Writing Principle
+
+Make the candidate's fit clear, then support it with relevant, credible evidence. Follow the candidate's actual experience and target role; section counts and word counts are defaults, not quotas.
+
 ## Two Workflow Paths
 
 ### Path A: Interview Mode
-Triggered when the user says something vague like "help me write a resume" without providing career details.
+When career details are missing, ask in small batches, skipping information already supplied:
 
-Ask these questions in order (use structured questions when possible):
-
-1. **Target role:** What specific Product Design role are you targeting? (e.g., Senior Product Designer, Staff Designer, UX Designer)
-2. **Years of experience:** How many years of professional design experience do you have?
-3. **Domain:** What industry/product type? (B2B SaaS, consumer mobile, e-commerce, marketplace, etc.)
-4. **Contact info:** Full name, email, location (city, state or "Remote"), LinkedIn URL, portfolio URL
-5. **Current/most recent role:** Company name, title, dates, and 4-5 key achievements with metrics
-6. **Previous roles:** For each (up to 2-3 more): company, title, dates, 2-3 key achievements
-7. **Key projects:** 2-3 standout projects you'd want a recruiter to click on (with case study links if available)
-8. **Education:** Degree, university, graduation year, any notable honors
-9. **Skills:** Your strongest design skills, research skills, and soft skills
-10. **Tools:** Design and collaboration tools you use daily
-11. **Job posting:** (Optional) Paste or link a job posting to tailor the resume
-12. **Structure choice:** `single-column` (ATS-safe default), `two-column-left` (sidebar left), `two-column-right` (classic right sidebar), `two-column-right-refined` (full-width summary and balanced right sidebar), or `editorial-html` (editable HTML with print-to-PDF)
+1. **Target:** Role, level, product/domain, and an optional job posting. Gather these early so achievement selection reflects the opening.
+2. **Background:** Actual titles, employers, dates, relevant experience, education, and portfolio/contact details.
+3. **Evidence:** For the strongest relevant work, establish the problem, personal ownership versus team contribution, key decision or constraint, result, and how the result was evaluated. Ask follow-ups only when missing evidence would materially improve the resume.
+4. **Skills:** Design, research, collaboration and leadership capabilities, plus tools the candidate can discuss confidently.
+5. **AI:** Where have you used AI in your design process or designed an AI feature, and how did you validate the result? Distinguish workflow assistance, AI product design, and evaluation/judgment. Do not assume AI experience.
+6. **Additional evidence:** Ask about independent, academic, or portfolio projects only when they add relevant evidence missing from employment. Gather meaningful recognition without an award-count minimum.
+7. **Layout:** Offer `single-column` (default), `two-column-left`, `two-column-right`, `two-column-right-refined`, or `editorial-html`. Preserve an existing choice.
 
 ### Path B: Paste-and-Go
-Triggered when the user provides raw career information (even if messy or unstructured).
+Parse the supplied career information first. Establish the target and strongest evidence, then ask only for critical missing details or clarifications that affect accuracy or relevance. Do not repeat the full interview. Use the selected layout, or default to single-column if there is no preference.
 
-1. Parse the provided information and identify all resume sections
-2. Detect if new grad (see new-grad detection signals in Step 2 below)
-3. Ask only for critical missing information (name, portfolio link, target role level)
-4. Ask for structure choice: `single-column`, `two-column-left`, `two-column-right`, `two-column-right-refined`, or `editorial-html`
-5. Proceed directly to generating the resume
-
-For critique of an uploaded resume, use the separate `resume-review` skill. Return here only after the user approves revisions or asks for a full rewrite.
+For critique of an uploaded resume, use the separate `resume-review` skill. Return here when the user approves revisions or asks for a rewrite. The writing quality checks below also apply during generation; they do not require a separate review workflow.
 
 ## Resume Generation Procedure
 
-Follow these steps in order:
-
 ### Step 1: Load Guidelines
-Read the recruiter guidelines: [recruiter-guidelines.md](./references/recruiter-guidelines.md)
+Read [recruiter-guidelines.md](./references/recruiter-guidelines.md) for section selection, evidence standards, AI treatment, seniority, and the two review perspectives.
 
-### Step 2: Determine Seniority
-Based on years of experience and role titles, determine the candidate's seniority level. This affects bullet language, section order, and focus:
-- **New Grad / Student (0 years):** no professional roles or internship-only. Triggers new-grad mode (see below)
-- Junior/Mid (0-3 years): craft execution, shipping, learning
-- Senior (3-6 years): end-to-end ownership, research-driven decisions, design systems
-- Staff/Principal (6+ years): cross-product strategy, practice building, org-level impact
-- Lead/Manager: team building, culture, process, business outcomes
+### Step 2: Assess Scope and Career Context
+Assess seniority using demonstrated ownership, autonomy, complexity, influence, and sustained impact. Years and titles provide context, not automatic level thresholds. Preserve actual employment titles; do not promote the candidate to match a posting. Distinguish senior individual contributors from people managers.
 
-**New-grad detection signals** (any one triggers new-grad mode):
-- Years of experience = 0
-- Keywords: "student," "new grad," "graduating," "bootcamp," "career change"
-- No professional design roles (only projects, coursework, volunteer)
-- Only role is an internship
-- Graduation date within last 12 months or in the future
-
-When new-grad mode is detected, confirm with the user:
-> "Based on your background, I'll structure this as an early-career resume — Education first, Projects as your main proof of capability. Sound right?"
+Choose section emphasis from the whole career. Recent graduation, a bootcamp, or a career change alone does not make someone a new graduate. Lead with the strongest relevant evidence: professional work, transferable experience, or projects and education. Clarify only when that choice is materially uncertain.
 
 ### Step 3: Write Content (Markdown)
-Generate the resume content in Markdown format following the guidelines strictly.
-For fictional demo resumes, use clearly fictional company and product names instead of Microsoft or other real employers. Preserve real company names when writing from a candidate's actual experience.
 
-**Experienced designer (1+ years):**
-- Name + Contact (portfolio link first)
-- Summary (exactly 3 lines)
-- Experience (XYZ formula bullets, varied structures, proper verb usage)
-- Key Projects (2-3 with links)
-- Recognition (optional — only if 3+ notable design awards)
-- Education (1-2 lines)
-- Skills (grouped) & Tools (single line)
+**Experienced-designer default:**
+- Name + Contact, with a prominent portfolio URL
+- Summary when it adds useful positioning: two concise sentences, roughly 30–50 words, combining identity/specialization with one relevant career achievement
+- Experience, reverse chronological, with most space for relevant ownership, decisions, and results
+- Skills & Tools, compact; Education, brief (sidebar layouts may position these differently)
+- Projects and Recognition only when they add meaningful evidence; omit empty sections
 
-**New grad / student (0 years):**
-- Name + Contact (portfolio link first)
-- Summary (3 lines, reframed: what you studied + strongest project outcome + differentiator)
-- Education (moved up — primary credential, include relevant coursework)
-- Projects (2-4 projects, 2-3 XYZ bullets each, link case studies)
-- Experience (only if internships or relevant part-time exist — omit if none)
-- Volunteer (only if design-related pro bono work — omit generic volunteering)
-- Skills (grouped) & Tools (single line)
+**Projects are conditional:** Omit Key/Selected Projects when it repeats Experience. Place useful case-study links beside the corresponding work. Include a separate section when academic, independent, or other projects demonstrate capabilities missing from employment. For early-career candidates, projects and education may lead, but substantive internships or transferable work can be stronger evidence.
 
-### Step 4: Job Posting Tailoring (if applicable)
-If a job posting URL was provided:
-1. Fetch the posting using web tools
-2. Extract the top 5-7 requirements
-3. Mirror exact keywords in bullets
-4. Reorder bullets to front-load relevant work
-5. Adjust Summary and Skills to match
+**Summary selection:** Choose the achievement most relevant to the target role, not automatically the largest number or latest project. Include leadership or AI when central to that fit and supported. Do not crowd the summary with a generic soft-skills list. A specific qualitative achievement is valid when metrics are unavailable. If no posting is supplied, use the stated target; do not invent employer requirements.
+
+**Skills:** Default to Design, Research, and Collaboration & Leadership, generally 3–4 relevant items each, plus a short tools line. Keep soft skills visible and substantiate important ones in Experience. Add a concise AI line only for supported, relevant capabilities. Counts are flexible; never fill a category with invented skills.
+
+For fictional demos, clearly identify the example as fictional in accompanying documentation and use fictional company/product names and reserved example URLs. Preserve real employers and facts when working from actual candidate experience. Never transfer demo claims into a real resume.
+
+### Step 4: Tailor to the Target (if applicable)
+For a supplied posting URL or pasted description, identify the main requirements, choose the summary achievement accordingly, and front-load relevant bullets within each role. Use the posting's terminology only where supported by the candidate's evidence. Preserve actual titles, scope, and attribution. If a URL cannot be read, request pasted text rather than inventing requirements.
 
 ### Step 5: Save as Markdown
 Save the resume as `{FirstName}_{LastName}_Resume.md` in the workspace.
@@ -144,49 +110,34 @@ If the user selects `two-column-left`, `two-column-right`, `two-column-right-ref
 - Suggest using two-column version mainly for networking, direct recruiter outreach, or portfolio downloads
 - For `editorial-html`, use the editable preview's PDF or Word download for direct sharing; keep the single-column Word version for ATS uploads.
 
-### Step 7: Review
-Present the resume to the user and ask:
-- Does the Summary accurately represent your identity and top achievement?
-- Are there any bullets that overstate or misrepresent your experience?
-- Is anything important missing?
-- Would you like me to tailor this to a specific job posting?
+### Step 7: Review from Both Perspectives
+Before delivery, apply both passes from the recruiter guidelines:
+- **Recruiter:** Clear role fit, readable chronology, relevant achievement, appropriate level, and accessible portfolio/contact information.
+- **Hiring manager:** Personal ownership, design judgment, craft, constraints, collaboration, and credible impact. AI claims describe actual use and validation when relevant.
 
-## XYZ Formula Reference
+Remove repetition and unsupported claims. Ask the user to resolve remaining factual uncertainty; do not fill gaps with invented numbers, responsibilities, skills, or outcomes. Invite corrections to positioning and accuracy without repeating questions already answered.
 
-Every experience bullet should follow: **Accomplished [X] as measured by [Y] by doing [Z]**
+## Evidence and Bullet Examples
 
-**Good examples for Product Designers:**
-- Redesigned the onboarding flow for a B2B analytics platform, increasing user activation by 28% by simplifying the 12-step setup to 4 contextual steps
-- Built a component library of 120+ components in Figma adopted by 4 product teams, reducing design-to-dev handoff time by 40%
-- Conducted 30+ usability sessions that uncovered a critical navigation issue, leading to a restructured IA that reduced support tickets by 22%
-- Led design for a 0→1 collaboration feature serving 50K+ users, driving a 15% increase in weekly active usage within 3 months of launch
+Use XYZ (accomplishment, measurement, method) when it naturally fits verified evidence. Other useful structures include problem → decision → consequence, or ownership → action → concrete result. A number is not required in every bullet. Across the selected bullets, make ownership, judgment, and outcomes clear without packing every dimension into every sentence.
 
-**Good examples for New Grads / Students:**
-- Redesigned a campus dining app navigation for a capstone project, reducing average task completion time by 40% across 8 moderated usability sessions
-- Conducted 12 user interviews and synthesized findings into 3 persona archetypes, shifting the team's design direction from feature-based to goal-based navigation
-- Designed and prototyped a budgeting tool during a 48-hour hackathon, earning 1st place among 30 teams by scoring highest on usability and visual polish criteria
-- Built a 45-component UI kit in Figma for a student design collective, adopted by 6 project teams and reducing initial wireframing time by an estimated 50%
+Illustrative examples, to use only when the underlying facts are supplied:
+- Redesigned merchant dashboard navigation based on card-sort findings, reducing time-to-insight by 40%.
+- Resolved a conflict between finance and support workflows by separating account-level permissions from transaction-level actions; the revised model shipped in the admin portal.
+- Used Claude to explore interaction prototypes, then evaluated the alternatives in moderated usability sessions before selecting the onboarding flow.
+- Tested a capstone prototype with eight participants; recurring navigation errors informed a revised information architecture. (Research scope and a design decision, not a claimed production outcome.)
 
-**Bad examples (do NOT generate these):**
-- Designed user interfaces for various projects (no metric, no method)
-- Collaborated with engineers to improve the product (vague, no outcome)
-- Used Figma and AI tools to create wireframes (tool-focused, not impact-focused)
-- [Achievement 1]: Led the redesign of the dashboard (labeled, template-like)
+Avoid generic responsibilities, unsupported causality, and tool lists presented as achievements. Keep measurement context where it matters: prototype testing versus production analytics, observed versus estimated results, and personal versus team contribution. Never invent an estimate or imply the entire platform audience used a feature.
 
 ## Output Quality Checklist
-Before delivering the final resume, verify:
-- [ ] One page worth of content (not too dense, not too sparse)
-- [ ] Portfolio link is the first contact item
-- [ ] Summary is exactly 3 lines, no filler phrases
-- [ ] Most recent role has 4-5 bullets, older roles have 2-3
-- [ ] Every bullet starts with a strong action verb
-- [ ] Every bullet has at least one metric/number
-- [ ] No two roles have the same bullet structure
-- [ ] Seniority language matches candidate's level
-- [ ] Skills are grouped into 3 categories
-- [ ] Tools are on a single line
-- [ ] No personal pronouns (I, me, my)
-- [ ] Date format is consistent (Mon YYYY – Mon YYYY)
-- [ ] If tailored: job posting keywords appear naturally in bullets
-
-Route critique-only requests to the `resume-review` skill before applying rewrites.
+- [ ] Target fit is clear; actual titles and career context are preserved.
+- [ ] Summary, if present, combines positioning with one relevant, supported achievement; roughly 30–50 words is a guideline.
+- [ ] Experience shows specific contributions and meaningful evidence, with verified metrics where available.
+- [ ] Important collaboration and leadership skills have supporting examples.
+- [ ] AI claims, if present, reflect actual workflows/product work and validation; no generic expertise claims.
+- [ ] Projects and recognition add evidence rather than repeat Experience; no empty headings.
+- [ ] Skills are concise, relevant, defensible, and retain supported soft skills; tools are compact.
+- [ ] Portfolio and case-study URLs are correctly formed; placeholders are identified before application use.
+- [ ] Dates are consistent; strongest relevant work receives the most space.
+- [ ] Aim for one readable page; allow two when relevant experience warrants it. Check actual export pagination, text extraction, and layout rather than shrinking text to force a page count.
+- [ ] Both recruiter and hiring-manager passes are complete; remaining factual uncertainty is surfaced.
