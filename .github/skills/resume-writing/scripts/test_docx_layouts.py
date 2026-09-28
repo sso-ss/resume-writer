@@ -3,8 +3,10 @@ import unittest
 from pathlib import Path
 
 from docx import Document
+from docx.oxml.ns import qn
 from docx.shared import Inches, Pt
 
+from to_docx import create_resume_doc
 from to_docx_right_sidebar import build_layout_c
 from to_docx_right_sidebar_refined import build_layout_refined
 from to_docx_two_column import build_layout_b
@@ -45,6 +47,14 @@ class LayoutTests(unittest.TestCase):
     def build(self, builder):
         builder(str(self.source), str(self.output))
         return Document(self.output)
+
+    def test_resume_text_respects_minimum_size(self):
+        for builder in (create_resume_doc, build_layout_b, build_layout_c, build_layout_refined):
+            with self.subTest(layout=builder.__name__):
+                document = self.build(builder)
+                self.assertEqual(document.styles['Normal'].font.size, Pt(10.5))
+                for size in document.element.xpath('.//w:r[w:t]/w:rPr/w:sz'):
+                    self.assertGreaterEqual(int(size.get(qn('w:val'))), 18)
 
     def test_left_grid_and_cells_use_one_to_two_ratio(self):
         table = self.build(build_layout_b).tables[0]

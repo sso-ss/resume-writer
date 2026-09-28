@@ -49,7 +49,7 @@ def build_layout_refined(
 
     style = doc.styles["Normal"]
     style.font.name = FONT
-    style.font.size = Pt(10)
+    style.font.size = Pt(10.5)
     style.font.color.rgb = TEXT_BODY
     style.paragraph_format.space_after = Pt(0)
     style.paragraph_format.space_before = Pt(0)
@@ -69,7 +69,7 @@ def build_layout_refined(
             if index:
                 p.add_run("  |  ")
             r = p.add_run(f"{label}: {value}" if label.lower() == "portfolio" else value)
-            r.font.size = Pt(9)
+            r.font.size = Pt(10)
             r.font.color.rgb = ACCENT if label.lower() == "portfolio" else TEXT_MUTED
             r.font.name = FONT
 
@@ -85,13 +85,13 @@ def build_layout_refined(
         p.paragraph_format.space_after = Pt(2)
         r = p.add_run("SUMMARY")
         r.bold = True
-        r.font.size = Pt(8.5)
+        r.font.size = Pt(10)
         r.font.color.rgb = ACCENT
         for line in sections["summary"]:
             if line.strip():
                 p = doc.add_paragraph()
                 p.paragraph_format.space_after = Pt(6)
-                fmt(p, line.strip(), size=Pt(9.5))
+                fmt(p, line.strip(), size=Pt(10.5))
 
     table = doc.add_table(rows=1, cols=2)
     table.autofit = False

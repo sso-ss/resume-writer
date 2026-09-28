@@ -6,6 +6,7 @@ from pathlib import Path
 from docx import Document
 from docx.enum.text import WD_LINE_SPACING, WD_TAB_ALIGNMENT
 from docx.shared import Pt
+from docx.oxml.ns import qn
 from playwright.sync_api import sync_playwright
 
 from serve_resume import create_server
@@ -55,6 +56,13 @@ class EditorialWordTests(unittest.TestCase):
                         page = browser.new_page()
                         page.route('https://**/*', lambda route: route.abort())
                         page.goto(f'http://127.0.0.1:{server.server_port}/')
+                        for layout in ('single-column', 'two-column-left', 'two-column-right', 'two-column-right-refined', 'editorial-html'):
+                            page.locator('#preview-layout').select_option(layout)
+                            sizes = page.locator('.page').evaluate("""element => [...element.querySelectorAll('p, li, h1, h2, h3, .contact, .org')]
+                                .filter(node => node.getClientRects().length)
+                                .map(node => parseFloat(getComputedStyle(node).fontSize) * 72 / 96)""")
+                            self.assertGreaterEqual(min(sizes), 8.99, layout)
+                            self.assertAlmostEqual(page.locator('.job li').first.evaluate("node => parseFloat(getComputedStyle(node).fontSize) * 72 / 96"), 10.5, places=2)
                         page.locator('h1').fill('Browser Edited Name')
                         page.locator('.role').fill('Staff Designer')
                         page.locator('.eyebrow').fill('Design and Research')
@@ -110,6 +118,13 @@ class EditorialWordTests(unittest.TestCase):
             self.assertEqual(len(main._tc.xpath('.//w:numPr')), 1)
             self.assertEqual(len(sidebar._tc.xpath('.//w:numPr')), 0)
             self.assertEqual(len(document.element.xpath('.//w:hyperlink')), 3)
+            bullet = next(item for item in main.paragraphs if 'Improved task completion' in item.text)
+            self.assertEqual(bullet.runs[0].font.size, Pt(10.5))
+            self.assertGreaterEqual(bullet.paragraph_format.line_spacing, Pt(14))
+            for run in document.element.xpath('.//w:r[w:t]'):
+                sizes = run.xpath('./w:rPr/w:sz')
+                if sizes:
+                    self.assertGreaterEqual(int(sizes[0].get(qn('w:val'))), 18)
 
     def test_edited_editorial_header_is_preserved(self):
         with tempfile.TemporaryDirectory() as directory:

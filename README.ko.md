@@ -44,7 +44,7 @@ AI 도구에서 이 저장소를 열면 아래 작성·리뷰 스킬을 사용�
 
 ```sh
 node bin/resume-writer.mjs
-node bin/resume-writer.mjs preview Jennifer_Lauren_Resume.md
+node bin/resume-writer.mjs preview examples/Alex_Example_Resume.md
 ```
 
 Python 스크립트를 직접 실행하려면 한 번만 환경을 준비하세요.
@@ -56,6 +56,12 @@ python -m pip install -r requirements.txt
 ```
 
 Windows에서는 `py -m venv .venv`로 환경을 만들고 PowerShell에서 `.venv\Scripts\Activate.ps1`로 활성화합니다. 필요하면 아래의 `python3`를 `python`으로 바꾸세요. Python 스크립트를 직접 실행할 때는 환경을 활성화한 상태로 유지하세요.
+
+## 기본 리뷰 화면
+
+AI 도구, 이력서, 채용공고를 선택하기 전의 기본 시작 화면입니다.
+
+![Resume Review의 기본 업로드 화면](https://raw.githubusercontent.com/sso-ss/resume-writer/main/docs/images/resume-review-default.png)
 
 ## 등록된 스킬
 
@@ -152,6 +158,22 @@ Windows에서는 `py -m venv .venv`로 환경을 만들고 PowerShell에서 `.ve
 2. 선택한 레이아웃과 일치하는 편집 가능한 HTML 미리보기 열기
 3. 검토 후 같은 레이아웃의 `.docx` 또는 `.pdf` 내보내기
 
+## 템플릿 예시
+
+`resume-writing` 스킬로 작성한 **Alex Example**의 이력서를 **Editorial** 템플릿과 **10.5pt 본문**으로 표시한 예시입니다. 실제 PDF가 한 페이지인지 확인한 뒤 이미지로 변환했습니다. **이름, Example City라는 지역, 모든 회사와 교육기관, 경력, 성과, 수치는 가상의 예시입니다.** 이메일과 포트폴리오도 예약된 `example.com` 도메인을 사용합니다.
+
+![10.5pt 본문을 사용한 가상 인물 Alex Example의 Editorial 이력서 템플릿](https://raw.githubusercontent.com/sso-ss/resume-writer/main/docs/images/resume-template-editorial.png)
+
+[예시 Markdown 보기](examples/Alex_Example_Resume.md) · [예시 안내](examples/README.md)
+
+저장소에서 다음 명령을 실행하면 같은 예시를 편집하고 Template 메뉴에서 다른 레이아웃을 비교할 수 있습니다.
+
+```sh
+npx @sso_ss/resume-writer preview examples/Alex_Example_Resume.md --layout editorial-html
+```
+
+2단 레이아웃은 직접 전달할 때 적합합니다. 일부 ATS는 컬럼을 정확히 읽지 못할 수 있으므로 채용 사이트 지원에는 단일 컬럼 버전을 권장합니다.
+
 ## 콘텐츠 작성 기본 원칙
 
 - **요약:** 영어 기준 약 30–50단어의 간결한 두 문장으로 전문 분야와 지원 직무에 관련된 성과 하나를 보여줍니다. 새로운 정보를 더하지 않으면 생략할 수 있습니다.
@@ -159,6 +181,7 @@ Windows에서는 `py -m venv .venv`로 환경을 만들고 PowerShell에서 `.ve
 - **프로젝트:** 경력과 중복되는 별도 프로젝트 섹션은 기본적으로 생략합니다. 경력에서 확인되지 않는 관련 역량을 보여줄 때 포함하고, 사례 링크는 해당 경력 옆에 배치할 수 있습니다.
 - **역량:** Design, Research, Collaboration & Leadership을 중심으로 각각 관련 항목 3–4개 정도와 짧은 Tools 줄을 사용합니다. 소프트 스킬을 유지하고 경력에서 근거를 보여줍니다.
 - **AI:** 실제 활용 또는 AI 제품 설계와 검증 경험이 지원 직무에 도움이 될 때 포함합니다. AI 역량 줄이나 요약 문구는 선택 사항입니다.
+- **글자 크기:** 본문은 기본 10.5pt, 모든 이력서 텍스트는 최소 9pt입니다. HTML·Word·PDF에서 같은 기준을 유지하며 한 페이지에 맞추기 위해 글자를 줄이지 않습니다.
 - **직급과 분량:** 연차만으로 직급을 정하지 않고 책임과 영향 범위를 봅니다. 읽기 쉬운 한 페이지를 목표로 하되 관련 경력이 충분하면 두 페이지를 허용합니다.
 - **최종 검토:** 리크루터 관점의 직무 적합성·경력 흐름·포트폴리오 접근성과 채용 매니저 관점의 주도성·판단·협업·성과의 신뢰성을 확인합니다.
 
@@ -256,6 +279,8 @@ Resume/
 ├── package.json                        # npm 패키지와 명령
 ├── bin/resume-writer.mjs                # 명령 진입점
 ├── lib/                                # CLI와 자동 실행 환경 설정
+├── docs/images/                        # README 스크린샷
+├── examples/                           # 가상 이력서 예시
 ├── requirements.txt                    # 기본 Python 의존성
 ├── .agents/skills/                     # Codex용 공통 스킬 링크
 ├── .claude/

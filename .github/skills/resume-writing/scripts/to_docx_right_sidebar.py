@@ -79,7 +79,7 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
 
     style = doc.styles["Normal"]
     style.font.name = FONT
-    style.font.size = Pt(10)
+    style.font.size = Pt(10.5)
     style.font.color.rgb = TEXT_BODY
     style.paragraph_format.space_after = Pt(0)
     style.paragraph_format.space_before = Pt(0)
@@ -113,7 +113,7 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
     links = [x for x in (portfolio, linkedin) if x]
     if links:
         r = p.add_run(" | ".join(links))
-        r.font.size = Pt(8.5)
+        r.font.size = Pt(10)
         r.font.color.rgb = ACCENT
         r.font.name = FONT
 
@@ -148,12 +148,12 @@ def build_layout_c(md_path: str, docx_path: Optional[str] = None) -> str:
             p = sidebar.add_paragraph()
             p.paragraph_format.space_after = Pt(1)
             r = p.add_run(f"{label}\n")
-            r.font.size = Pt(7)
+            r.font.size = Pt(10)
             r.font.color.rgb = TEXT_MUTED
             r.font.name = FONT
             r.bold = True
             r = p.add_run(value)
-            r.font.size = Pt(8.5)
+            r.font.size = Pt(10)
             r.font.color.rgb = TEXT_DARK
             r.font.name = FONT
 

@@ -62,6 +62,8 @@ Choose section emphasis from the whole career. Recent graduation, a bootcamp, or
 
 For fictional demos, clearly identify the example as fictional in accompanying documentation and use fictional company/product names and reserved example URLs. Preserve real employers and facts when working from actual candidate experience. Never transfer demo claims into a real resume.
 
+**Readable typography:** Use 10.5 pt body text by default and a minimum of 9 pt for all visible resume text, including summaries, sidebar content, dates, contact details, and section labels. Reserve 9 pt for secondary details when needed; retain 10.5 pt body text where practical. Specify print sizes in points; 9 pt equals 12 px. Apply the same minimum to HTML previews, Word, and PDF. Fill a page with relevant evidence and balanced spacing, never filler or smaller type. If the content does not fit, edit repetition, adjust reasonable spacing, or allow another page. Verify actual export pagination and font sizes.
+
 ### Step 4: Tailor to the Target (if applicable)
 For a supplied posting URL or pasted description, identify the main requirements, choose the summary achievement accordingly, and front-load relevant bullets within each role. Use the posting's terminology only where supported by the candidate's evidence. Preserve actual titles, scope, and attribution. If a URL cannot be read, request pasted text rather than inventing requirements.
 
@@ -143,4 +145,5 @@ Avoid generic responsibilities, unsupported causality, and tool lists presented 
 - [ ] Portfolio and case-study URLs are correctly formed; placeholders are identified before application use.
 - [ ] Dates are consistent; strongest relevant work receives the most space.
 - [ ] Aim for one readable page; allow two when relevant experience warrants it. Check actual export pagination, text extraction, and layout rather than shrinking text to force a page count.
+- [ ] Body text defaults to 10.5 pt; all visible resume text is at least 9 pt in the preview and exports. Verify computed/rendered sizes rather than confusing CSS pixels with points.
 - [ ] Both recruiter and hiring-manager passes are complete; remaining factual uncertainty is surfaced.

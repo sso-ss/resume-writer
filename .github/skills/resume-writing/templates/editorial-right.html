@@ -86,6 +86,17 @@
     body[data-layout="two-column-right-refined"] .aside-section { margin-bottom: 15px; }
     body[data-layout="two-column-right-refined"] .job-header { display: block; }
     body[data-layout="two-column-right-refined"] .job-header .meta { display: block; margin: 2px 0 6px; }
+    /* Document typography uses print points; app controls keep their own scale. */
+    body[data-layout] .page { font-size: 10.5pt; }
+    body[data-layout] .page p,
+    body[data-layout] .page li,
+    body[data-layout] .page .org { font-size: 10.5pt; line-height: 1.4; }
+    body[data-layout] .page h2,
+    body[data-layout] .page .eyebrow,
+    body[data-layout] .page .contact,
+    body[data-layout] .page .meta { font-size: 10pt; }
+    body[data-layout] .page h3 { font-size: 12pt; }
+    body[data-layout] .page .role { font-size: 12.75pt; }
     [contenteditable]:focus { outline: 2px solid #a5bba8; outline-offset: 7px; border-radius: 1px; }
     @media screen { .page { outline: 1px solid #e6e6e6; border-radius: 16px; } }
     @media (max-width: 850px) {

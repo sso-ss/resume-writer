@@ -44,7 +44,7 @@ Open this repository in your AI tool to use the writing and review skills below.
 
 ```sh
 node bin/resume-writer.mjs
-node bin/resume-writer.mjs preview Jennifer_Lauren_Resume.md
+node bin/resume-writer.mjs preview examples/Alex_Example_Resume.md
 ```
 
 For direct Python use, prepare an environment once:
@@ -56,6 +56,12 @@ python -m pip install -r requirements.txt
 ```
 
 On Windows, create the environment with `py -m venv .venv` and activate it with `.venv\Scripts\Activate.ps1` in PowerShell. Use `python` instead of `python3` below if needed. Keep the environment active when launching Python scripts directly.
+
+## Default Review Page
+
+The starting screen before choosing an AI provider, uploading a resume, or adding a job posting.
+
+![Resume Review default upload page](https://raw.githubusercontent.com/sso-ss/resume-writer/main/docs/images/resume-review-default.png)
 
 ## Available Skills
 
@@ -152,6 +158,22 @@ The agent uses a preview-first flow:
 2. Opens an editable HTML preview matching your selected layout
 3. Generates the matching `.docx` or `.pdf` after you review and export it
 
+## Template Example
+
+A sample created with the `resume-writing` skill, shown in the **Editorial** template with **10.5 pt body text** and a verified one-page PDF. **Alex Example, Example City, all companies and education, and every achievement and metric are fictional.** Contact details use the reserved `example.com` domain.
+
+![Fictional Alex Example resume in the Editorial template with readable 10.5 pt text](https://raw.githubusercontent.com/sso-ss/resume-writer/main/docs/images/resume-template-editorial.png)
+
+[View the sample Markdown](examples/Alex_Example_Resume.md) · [About this fictional example](examples/README.md)
+
+From this repository, open the same sample to edit its content or compare the other layouts in the Template menu:
+
+```sh
+npx @sso_ss/resume-writer preview examples/Alex_Example_Resume.md --layout editorial-html
+```
+
+Use this two-column layout for direct sharing. Keep a single-column version for application portals, since some ATS systems parse columns less reliably.
+
 ## Content Defaults
 
 - **Summary:** Two concise sentences, roughly 30–50 words: positioning plus one achievement relevant to the target role. Optional when it adds no useful information.
@@ -159,6 +181,7 @@ The agent uses a preview-first flow:
 - **Projects:** Omitted for experienced designers when they repeat Experience. Include projects that demonstrate otherwise missing relevant abilities; link case studies beside related work where useful.
 - **Skills:** Compact Design, Research, and Collaboration & Leadership categories, generally 3–4 relevant items each, plus a short Tools line. Keep soft skills visible and demonstrate them in Experience.
 - **AI:** Include supported workflow/product-design capabilities and validation when relevant; add an AI skills line or summary mention only when it helps the application.
+- **Typography:** 10.5 pt body text by default, with a 9 pt minimum for all resume text across HTML, Word, and PDF. Edit content or use another page rather than shrinking type.
 - **Level and length:** Assess seniority by responsibility and scope. Aim for one readable page; allow two when relevant experience warrants it.
 - **Final review:** Check recruiter concerns (fit, chronology, portfolio access) and hiring-manager concerns (ownership, judgment, collaboration, credible impact).
 
@@ -259,6 +282,8 @@ Resume/
 ├── package.json                        # npm package and command
 ├── bin/resume-writer.mjs                # Command entry point
 ├── lib/                                # CLI and automatic runtime setup
+├── docs/images/                        # README screenshots
+├── examples/                           # Fictional resume sample
 ├── requirements.txt                    # Core Python dependencies
 ├── .agents/skills/                     # Codex links to the shared skills
 ├── .claude/

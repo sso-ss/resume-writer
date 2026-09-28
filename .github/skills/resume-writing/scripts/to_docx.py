@@ -52,7 +52,7 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None, hybrid: boo
     style = doc.styles["Normal"]
     font = style.font
     font.name = "Arial"
-    font.size = Pt(10)
+    font.size = Pt(10.5)
     font.color.rgb = RGBColor(0x33, 0x33, 0x33)
     style.paragraph_format.space_after = Pt(2)
     style.paragraph_format.space_before = Pt(0)
@@ -88,7 +88,7 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None, hybrid: boo
             p = doc.add_paragraph()
             p.alignment = WD_ALIGN_PARAGRAPH.LEFT if hybrid else WD_ALIGN_PARAGRAPH.CENTER
             p.paragraph_format.space_after = Pt(6)
-            _add_formatted_run(p, line.strip(), size=Pt(9), color=RGBColor(0x55, 0x55, 0x55))
+            _add_formatted_run(p, line.strip(), size=Pt(10.5), color=RGBColor(0x55, 0x55, 0x55))
             i += 1
             continue
 
@@ -100,7 +100,7 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None, hybrid: boo
             p.paragraph_format.space_after = Pt(3)
             run = p.add_run(heading_text.upper())
             run.bold = True
-            run.font.size = Pt(10)
+            run.font.size = Pt(10.5)
             run.font.color.rgb = RGBColor(0x2B, 0x4C, 0x5E) if hybrid else RGBColor(0x1A, 0x1A, 0x1A)
             # Add a bottom border (thin line)
             _add_bottom_border(p)
@@ -115,10 +115,10 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None, hybrid: boo
             p.paragraph_format.space_after = Pt(2)
             if hybrid and " | " in sub_text:
                 role, date = sub_text.rsplit(" | ", 1)
-                _add_formatted_run(p, role, size=Pt(10), bold=True, color=RGBColor(0x1A, 0x1A, 0x1A))
-                _add_formatted_run(p, "  |  " + date, size=Pt(9), color=RGBColor(0x55, 0x55, 0x55))
+                _add_formatted_run(p, role, size=Pt(10.5), bold=True, color=RGBColor(0x1A, 0x1A, 0x1A))
+                _add_formatted_run(p, "  |  " + date, size=Pt(10.5), color=RGBColor(0x55, 0x55, 0x55))
             else:
-                _add_formatted_run(p, sub_text, size=Pt(10), bold=True, color=RGBColor(0x1A, 0x1A, 0x1A))
+                _add_formatted_run(p, sub_text, size=Pt(10.5), bold=True, color=RGBColor(0x1A, 0x1A, 0x1A))
             i += 1
             continue
 
@@ -132,7 +132,7 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None, hybrid: boo
             p.paragraph_format.left_indent = Inches(0.25)
             # Clear default run and add formatted text
             p.clear()
-            _add_formatted_run(p, bullet_text, size=Pt(9.5))
+            _add_formatted_run(p, bullet_text, size=Pt(10.5))
             i += 1
             continue
 
@@ -140,7 +140,7 @@ def create_resume_doc(md_path: str, docx_path: Optional[str] = None, hybrid: boo
         if line.strip():
             p = doc.add_paragraph()
             p.paragraph_format.space_after = Pt(2)
-            _add_formatted_run(p, line.strip(), size=Pt(10))
+            _add_formatted_run(p, line.strip(), size=Pt(10.5))
             i += 1
             continue
 

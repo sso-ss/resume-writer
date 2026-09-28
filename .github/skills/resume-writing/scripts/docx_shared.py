@@ -116,7 +116,7 @@ def add_bottom_rule(paragraph) -> None:
     pPr.append(pBdr)
 
 
-def fmt(paragraph, text: str, size=Pt(9.5), color=TEXT_BODY, bold=False):
+def fmt(paragraph, text: str, size=Pt(10.5), color=TEXT_BODY, bold=False):
     """Render text with **bold** and [link](url) flattening."""
     for part in re.split(r"(\*\*.*?\*\*)", text):
         if part.startswith("**") and part.endswith("**"):
@@ -141,7 +141,7 @@ def heading(cell, text: str, accent=ACCENT) -> None:
     p.paragraph_format.space_after = Pt(3)
     r = p.add_run(text.upper())
     r.bold = True
-    r.font.size = Pt(8.5)
+    r.font.size = Pt(10)
     r.font.color.rgb = accent
     r.font.name = FONT
     rPr = r._r.get_or_add_rPr()
@@ -164,20 +164,20 @@ def sidebar_lines(cell, lines: List[str], *, bullets: bool = False) -> None:
             if bullets:
                 p.paragraph_format.first_line_indent = -Inches(0.1)
                 p.paragraph_format.tab_stops.add_tab_stop(Inches(0.15))
-            fmt(p, bullet.group(1).strip(), size=Pt(8.5))
+            fmt(p, bullet.group(1).strip(), size=Pt(10.5))
         elif line.startswith("### "):
             p = cell.add_paragraph()
             p.paragraph_format.space_before = Pt(4)
             p.paragraph_format.space_after = Pt(1)
             r = p.add_run(line[4:].strip())
             r.bold = True
-            r.font.size = Pt(9)
+            r.font.size = Pt(10)
             r.font.color.rgb = TEXT_DARK
             r.font.name = FONT
         else:
             p = cell.add_paragraph()
             p.paragraph_format.space_after = Pt(1)
-            fmt(p, line, size=Pt(8.5))
+            fmt(p, line, size=Pt(10.5))
 
 
 def main_lines(cell, lines: List[str]) -> None:
@@ -189,7 +189,7 @@ def main_lines(cell, lines: List[str]) -> None:
             p = cell.add_paragraph()
             p.paragraph_format.space_before = Pt(6)
             p.paragraph_format.space_after = Pt(2)
-            fmt(p, line[4:].strip(), size=Pt(10), color=TEXT_DARK, bold=True)
+            fmt(p, line[4:].strip(), size=Pt(10.5), color=TEXT_DARK, bold=True)
         elif re.match(r"^[\-*]\s+", line):
             content = re.match(r"^[\-*]\s+(.*)", line).group(1).strip()
             p = cell.add_paragraph(style="List Bullet")
@@ -199,11 +199,11 @@ def main_lines(cell, lines: List[str]) -> None:
             p.paragraph_format.first_line_indent = -Inches(0.15)
             p.paragraph_format.tab_stops.add_tab_stop(Inches(0.15))
             p.clear()
-            fmt(p, content, size=Pt(9))
+            fmt(p, content, size=Pt(10.5))
         else:
             p = cell.add_paragraph()
             p.paragraph_format.space_after = Pt(2)
-            fmt(p, line, size=Pt(9.5))
+            fmt(p, line, size=Pt(10.5))
 
 
 def render_sidebar_skills(sidebar, sections: Dict[str, List[str]]) -> None:

@@ -88,6 +88,7 @@ Company leveling varies. Preserve employment titles and describe demonstrated sc
 - Identify the main requirements from a supplied posting, then select the summary proof and relevant experience. Without a posting, use the stated target role/domain and avoid employer-specific assumptions.
 - Use job terminology only where it accurately describes supported work. Do not add missing skills or change employment titles to create a match.
 - Aim for one readable page; allow two when relevant experience warrants it. Cut repetition and low-value content before reducing font size. Check actual rendered pagination.
+- Default to 10.5 pt body text and keep all visible resume text at least 9 pt, including dates, contacts, labels, and sidebar content. Reserve 9 pt for secondary details when needed. In HTML, use `pt` or convert correctly: 9 pt equals 12 px. Preserve readable sizes in Word and PDF; use relevant content and balanced spacing to fill the page, never filler or smaller type.
 - Use consistent dates, conventional headings, and selectable text. Keep a single-column version for application portals; parsing of columns and tables varies by ATS. Neither a layout label nor extractable text guarantees compatibility.
 - Inspect exports for reading order, missing content, clipping, tiny text, and broken links. Respect the selected layout; do not claim all colors or graphics inherently prevent parsing.
 
