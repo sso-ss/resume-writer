@@ -160,22 +160,6 @@ AI 도구, 이력서, 채용공고를 선택하기 전의 기본 시작 화면�
 2. 선택한 레이아웃과 일치하는 편집 가능한 HTML 미리보기 열기
 3. 검토 후 같은 레이아웃의 `.docx` 또는 `.pdf` 내보내기
 
-## 템플릿 예시
-
-`resume-writing` 스킬로 작성한 **Alex Example**의 이력서를 **Editorial** 템플릿과 **10.5pt 본문**으로 표시한 예시입니다. 실제 PDF가 한 페이지인지 확인한 뒤 이미지로 변환했습니다. **이름, Example City라는 지역, 모든 회사와 교육기관, 경력, 성과, 수치는 가상의 예시입니다.** 이메일과 포트폴리오도 예약된 `example.com` 도메인을 사용합니다.
-
-![10.5pt 본문을 사용한 가상 인물 Alex Example의 Editorial 이력서 템플릿](https://raw.githubusercontent.com/sso-ss/resume-writer/main/docs/images/resume-template-editorial.png)
-
-[예시 Markdown 보기](examples/Alex_Example_Resume.md) · [예시 안내](examples/README.md)
-
-저장소에서 다음 명령을 실행하면 같은 예시를 편집하고 Template 메뉴에서 다른 레이아웃을 비교할 수 있습니다.
-
-```sh
-npx @sso_ss/resume-writer preview examples/Alex_Example_Resume.md --layout editorial-html
-```
-
-2단 레이아웃은 직접 전달할 때 적합합니다. 일부 ATS는 컬럼을 정확히 읽지 못할 수 있으므로 채용 사이트 지원에는 단일 컬럼 버전을 권장합니다.
-
 ## 콘텐츠 작성 기본 원칙
 
 - **요약:** 영어 기준 약 30–50단어의 간결한 두 문장으로 전문 분야와 지원 직무에 관련된 성과 하나를 보여줍니다. 새로운 정보를 더하지 않으면 생략할 수 있습니다.

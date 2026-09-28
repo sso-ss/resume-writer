@@ -160,22 +160,6 @@ The agent uses a preview-first flow:
 2. Opens an editable HTML preview matching your selected layout
 3. Generates the matching `.docx` or `.pdf` after you review and export it
 
-## Template Example
-
-A sample created with the `resume-writing` skill, shown in the **Editorial** template with **10.5 pt body text** and a verified one-page PDF. **Alex Example, Example City, all companies and education, and every achievement and metric are fictional.** Contact details use the reserved `example.com` domain.
-
-![Fictional Alex Example resume in the Editorial template with readable 10.5 pt text](https://raw.githubusercontent.com/sso-ss/resume-writer/main/docs/images/resume-template-editorial.png)
-
-[View the sample Markdown](examples/Alex_Example_Resume.md) · [About this fictional example](examples/README.md)
-
-From this repository, open the same sample to edit its content or compare the other layouts in the Template menu:
-
-```sh
-npx @sso_ss/resume-writer preview examples/Alex_Example_Resume.md --layout editorial-html
-```
-
-Use this two-column layout for direct sharing. Keep a single-column version for application portals, since some ATS systems parse columns less reliably.
-
 ## Content Defaults
 
 - **Summary:** Two concise sentences, roughly 30–50 words: positioning plus one achievement relevant to the target role. Optional when it adds no useful information.
