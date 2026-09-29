@@ -6,11 +6,16 @@ Create and tailor Product Designer resumes, or review an existing resume against
 
 > **Always review the result yourself before using it.** AI can miss important context, make mistakes, or suggest wording that overstates your experience. Check every claim, date, metric, link, and job-specific suggestion against your own records, then inspect the exported file for layout issues. You are responsible for the final resume and application.
 
-## Start in Codex
+## Start from your AI tool
 
-Open this project in Codex and say **“Open Resume Review.”** Codex opens the upload page for you. Add your `.md`, `.docx`, or searchable `.pdf` resume and the job posting URL or full description, then click **Review my resume**. Scanned PDFs need OCR first.
+Open this project in a supported AI tool and ask it to **“Open Resume Review.”** You can also use the tool’s resume review skill or agent:
 
-You do not need to run an npm command for this route. The review uses your signed-in Codex CLI account; if account access or a local dependency is missing, ask Codex to help set it up.
+- **Codex:** `$resume-review`
+- **Claude Code:** `/resume-review`
+- **Cursor:** select the `resume-review` skill or ask to open the review
+- **GitHub Copilot:** select the `resume-writer` agent or ask to open the review
+
+The upload page opens. Add your `.md`, `.docx`, or searchable `.pdf` resume and the job posting URL or full description, then click **Review my resume**. Scanned PDFs need OCR first. The review uses the selected AI tool’s account; its CLI must be installed and signed in. You do not need to run an npm command when using the skills or agent in this repository.
 
 ## Run with npm
 
@@ -75,10 +80,10 @@ The starting screen before choosing an AI provider, uploading a resume, or addin
 
 Both skills are registered in the repository for Codex (`.agents/skills`), Claude Code (`.claude/skills`), and Cursor (`.cursor/skills`). Copilot uses the canonical `.github/skills` directories and the existing `resume-writer` agent.
 
-| Task | Codex | Claude Code |
-| --- | --- | --- |
-| Build or tailor a resume | `$resume-writing` | `/resume-writing` |
-| Open Resume Review | `$resume-review` | `/resume-review` |
+| Task | Codex | Claude Code | Cursor | GitHub Copilot |
+| --- | --- | --- | --- | --- |
+| Build or tailor a resume | `$resume-writing` | `/resume-writing` | Select the skill | Select the `resume-writer` agent |
+| Open Resume Review | `$resume-review` | `/resume-review` | Select the skill | Select the `resume-writer` agent |
 
 Claude's existing `/resume-writer` command remains available. In Cursor or Copilot, select the available skill or ask to build/review a resume. Restart the host session if newly registered skills are not visible. The upload screen supports Codex CLI, Claude Code, Cursor Agent CLI, and GitHub Copilot CLI. Install and sign in to the selected CLI; being signed in to an editor alone may not sign in its CLI.
 

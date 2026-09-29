@@ -6,11 +6,16 @@ Product Designer 이력서를 작성·맞춤 수정하거나, 기존 이력서�
 
 > **사용하기 전에 결과를 반드시 직접 다시 검토하세요.** AI는 중요한 맥락을 놓치거나 실수할 수 있고, 실제 경력을 과장하는 표현을 제안할 수도 있습니다. 모든 경력·날짜·수치·링크와 채용공고에 맞춘 제안을 본인의 자료와 대조하고, 내보낸 파일의 레이아웃도 확인하세요. 최종 이력서와 지원 내용은 본인이 책임져야 합니다.
 
-## Codex에서 시작하기
+## 사용하는 AI 도구에서 시작하기
 
-Codex에서 이 프로젝트를 열고 **“이력서 리뷰 열어줘”**라고 말하세요. Codex가 업로드 화면을 엽니다. `.md`, `.docx` 또는 텍스트 검색이 가능한 `.pdf` 이력서와 채용공고 URL이나 전체 내용을 넣고 **Review my resume**를 누르세요. 스캔한 PDF는 먼저 OCR 처리가 필요합니다.
+Codex, Claude Code, Cursor 또는 GitHub Copilot에서 이 프로젝트를 열고 **“이력서 리뷰 열어줘”**라고 요청하세요. 각 도구의 리뷰 스킬이나 에이전트를 직접 선택해도 됩니다.
 
-이 방법은 npm 명령을 직접 입력할 필요가 없습니다. 리뷰에는 로그인된 Codex CLI 계정을 사용합니다. 계정 연결이나 실행 준비가 필요하다는 안내가 나오면 Codex에 설정을 도와달라고 요청하세요.
+- **Codex:** `$resume-review`
+- **Claude Code:** `/resume-review`
+- **Cursor:** `resume-review` 스킬 선택 또는 리뷰 화면 열기를 요청
+- **GitHub Copilot:** `resume-writer` 에이전트 선택 또는 리뷰 화면 열기를 요청
+
+업로드 화면에서 `.md`, `.docx` 또는 텍스트 검색이 가능한 `.pdf` 이력서와 채용공고 URL이나 전체 내용을 넣고 **Review my resume**를 누르세요. 스캔한 PDF는 먼저 OCR 처리가 필요합니다. 리뷰는 선택한 AI 도구 계정을 사용하므로 해당 CLI가 설치되어 있고 로그인되어 있어야 합니다. 저장소의 스킬이나 에이전트를 사용할 때는 npm 명령을 입력할 필요가 없습니다.
 
 ## npm으로 실행하기
 
@@ -75,10 +80,10 @@ AI 도구, 이력서, 채용공고를 선택하기 전의 기본 시작 화면�
 
 이력서 작성과 리뷰 스킬을 Codex (`.agents/skills`), Claude Code (`.claude/skills`), Cursor (`.cursor/skills`)에 모두 등록했습니다. Copilot은 `.github/skills`의 공통 스킬과 기존 `resume-writer` 에이전트를 사용합니다.
 
-| 기능 | Codex | Claude Code |
-| --- | --- | --- |
-| 이력서 작성·맞춤 수정 | `$resume-writing` | `/resume-writing` |
-| 리뷰 업로드 화면 열기 | `$resume-review` | `/resume-review` |
+| 기능 | Codex | Claude Code | Cursor | GitHub Copilot |
+| --- | --- | --- | --- | --- |
+| 이력서 작성·맞춤 수정 | `$resume-writing` | `/resume-writing` | 스킬 선택 | `resume-writer` 에이전트 선택 |
+| 리뷰 업로드 화면 열기 | `$resume-review` | `/resume-review` | 스킬 선택 | `resume-writer` 에이전트 선택 |
 
 기존 Claude `/resume-writer` 명령도 유지됩니다. 새 스킬이 보이지 않으면 새 세션을 시작하세요. Cursor/Copilot에서는 스킬을 선택하거나 자연어로 요청할 수 있습니다. 스킬 등록과 AI 연결은 별개이며, 업로드 화면은 Codex, Claude Code, Cursor Agent CLI, GitHub Copilot CLI를 지원합니다. 선택한 CLI의 설치와 로그인이 필요합니다.
 
