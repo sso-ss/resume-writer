@@ -167,6 +167,13 @@
       const savedLayout = localStorage.getItem(key + '-layout');
       if (['single-column', 'two-column-left', 'two-column-right', 'two-column-right-refined', 'editorial-html'].includes(savedLayout)) document.body.dataset.layout = savedLayout;
     } catch (error) { /* local files may block storage */ }
+    const oldSkills = page.querySelector('section[data-section="Expertise"]');
+    const oldHeading = oldSkills?.querySelector('h2');
+    if (oldHeading?.textContent.trim().toLowerCase() === 'expertise') {
+      oldSkills.dataset.section = 'Skills';
+      oldHeading.textContent = 'Skills';
+      try { localStorage.setItem(key, page.innerHTML); } catch (error) { /* editing still works */ }
+    }
     if (!page.querySelector('.summary-label')) {
       const label = document.createElement('h2');
       label.className = 'summary-label';

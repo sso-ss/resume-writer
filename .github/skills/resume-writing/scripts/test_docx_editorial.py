@@ -1,3 +1,4 @@
+import hashlib
 import tempfile
 import threading
 import unittest
@@ -41,6 +42,38 @@ B.Des | Example University | 2020
 
 
 class EditorialWordTests(unittest.TestCase):
+    def test_saved_expertise_heading_updates_to_skills(self):
+        with tempfile.TemporaryDirectory() as directory:
+            source = Path(directory) / 'resume.md'
+            source.write_text(SOURCE)
+            preview = build_html(str(source), str(Path(directory) / 'resume.html'))
+            server = create_server(preview)
+            thread = threading.Thread(target=server.serve_forever, daemon=True)
+            thread.start()
+            try:
+                with sync_playwright() as playwright:
+                    browser = playwright.chromium.launch()
+                    try:
+                        page = browser.new_page()
+                        page.goto(f'http://127.0.0.1:{server.server_port}/')
+                        storage_key = 'product-designer-resume-' + hashlib.sha256(SOURCE.encode()).hexdigest()[:12]
+                        page.evaluate("""key => {
+                            const section = document.querySelector('section[data-section="Skills"]');
+                            section.dataset.section = 'Expertise';
+                            section.querySelector('h2').textContent = 'Expertise';
+                            document.querySelector('h1').textContent = 'Edited Name';
+                            localStorage.setItem(key, document.querySelector('.page').innerHTML);
+                        }""", storage_key)
+                        page.reload()
+                        self.assertEqual(page.locator('section[data-section="Skills"] h2').text_content(), 'Skills')
+                        self.assertEqual(page.locator('h1').text_content(), 'Edited Name')
+                    finally:
+                        browser.close()
+            finally:
+                server.shutdown()
+                server.server_close()
+                thread.join()
+
     def test_preview_button_exports_editorial_and_preserves_edits(self):
         with tempfile.TemporaryDirectory() as directory:
             source = Path(directory) / 'resume.md'
@@ -58,6 +91,7 @@ class EditorialWordTests(unittest.TestCase):
                         page.goto(f'http://127.0.0.1:{server.server_port}/')
                         for layout in ('single-column', 'two-column-left', 'two-column-right', 'two-column-right-refined', 'editorial-html'):
                             page.locator('#preview-layout').select_option(layout)
+                            self.assertEqual(page.locator('section[data-section="Skills"] h2').text_content(), 'Skills')
                             sizes = page.locator('.page').evaluate("""element => [...element.querySelectorAll('p, li, h1, h2, h3, .contact, .org')]
                                 .filter(node => node.getClientRects().length)
                                 .map(node => parseFloat(getComputedStyle(node).fontSize) * 72 / 96)""")
@@ -80,7 +114,8 @@ class EditorialWordTests(unittest.TestCase):
                         main, gutter, sidebar = document.tables[0].rows[0].cells
                         self.assertIn('Edited Company', main.text)
                         self.assertIn('SELECTED PROJECTS', main.text)
-                        self.assertIn('EXPERTISE', sidebar.text)
+                        self.assertIn('SKILLS', sidebar.text)
+                        self.assertNotIn('EXPERTISE', sidebar.text)
                         self.assertEqual(document.element.xpath('.//w:pBdr'), [])
                     finally:
                         browser.close()
@@ -108,7 +143,8 @@ class EditorialWordTests(unittest.TestCase):
             self.assertEqual([column.width for column in document.tables[0].columns],
                              [Pt(374.6), Pt(24), Pt(132.75)])
             self.assertIn('SELECTED PROJECTS', main.text)
-            self.assertIn('EXPERTISE', sidebar.text)
+            self.assertIn('SKILLS', sidebar.text)
+            self.assertNotIn('EXPERTISE', sidebar.text)
             self.assertIn('TOOLS', sidebar.text)
             self.assertIn('RECOGNITION', sidebar.text)
             self.assertIn('EDUCATION', sidebar.text)

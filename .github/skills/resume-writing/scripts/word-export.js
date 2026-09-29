@@ -16,7 +16,7 @@ function resumeMarkdown(page) {
     const sectionName = section.dataset.section || text(section.querySelector('h2'));
     const type = {
       experience: 'Experience', 'selected projects': 'Selected Projects',
-      expertise: 'Expertise', tools: 'Tools', recognition: 'Recognition', education: 'Education',
+      skills: 'Skills', expertise: 'Skills', tools: 'Tools', recognition: 'Recognition', education: 'Education',
     }[sectionName.toLowerCase()] || sectionName;
     if (type === 'Experience') {
       lines.push('## Experience', '');
@@ -33,8 +33,8 @@ function resumeMarkdown(page) {
       for (const project of section.querySelectorAll('.project')) {
         lines.push(`- **${text(project.querySelector('h3'))}** - ${[...project.querySelectorAll('p')].map(inline).join(' ')}`);
       }
-    } else if (type === 'Expertise' || type === 'Tools') {
-      if (type === 'Expertise') lines.push('## Skills & Tools', '');
+    } else if (type === 'Skills' || type === 'Tools') {
+      if (!lines.includes('## Skills & Tools')) lines.push('## Skills & Tools', '');
       for (const paragraph of section.querySelectorAll('p')) {
         const clone = paragraph.cloneNode(true);
         const label = clone.querySelector('.label');

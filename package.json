@@ -1,6 +1,6 @@
 {
   "name": "@sso_ss/resume-writer",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Review resumes against jobs and preview editable resumes with Word and PDF exports. Python setup is automatic.",
   "type": "module",
   "license": "UNLICENSED",

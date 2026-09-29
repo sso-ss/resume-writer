@@ -136,8 +136,8 @@ def build_html(md_path: str, html_path: Optional[str] = None, layout: str = "edi
     role = summary.split(" with ", 1)[0] if " with " in summary else "Product Designer"
     experience = section("Experience", jobs_html(sections.get("experience", [])))
     projects = section("Selected Projects", projects_html(sections.get("key projects", sections.get("projects", []))))
-    expertise, tools = skills_html(sections.get("skills & tools", sections.get("skills", [])))
-    expertise = section("Expertise", expertise, "aside-section")
+    skills, tools = skills_html(sections.get("skills & tools", sections.get("skills", [])))
+    skills = section("Skills", skills, "aside-section")
     tools = section("Tools", tools, "aside-section")
     recognition = "".join(
         f"<p>{inline(line[2:])}</p>"
@@ -157,7 +157,7 @@ def build_html(md_path: str, html_path: Optional[str] = None, layout: str = "edi
     summary_label = '<h2 class="summary-label">Summary</h2>' if summary else ""
     intro = f'<p class="intro">{escape(summary)}</p>' if summary else ""
     main_sections = experience + projects
-    sidebar_sections = expertise + tools + recognition + education
+    sidebar_sections = skills + tools + recognition + education
     if layout == "single-column":
         page_content = f'{identity}{contact}{summary_label}{intro}</header><div class="layout"><div>{main_sections}{sidebar_sections}</div></div>'
     elif layout == "two-column-left":
