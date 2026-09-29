@@ -6,7 +6,13 @@ Create and tailor Product Designer resumes, or review an existing resume against
 
 > **Always review the result yourself before using it.** AI can miss important context, make mistakes, or suggest wording that overstates your experience. Check every claim, date, metric, link, and job-specific suggestion against your own records, then inspect the exported file for layout issues. You are responsible for the final resume and application.
 
-## Quick Start (npm)
+## Start in Codex
+
+Open this project in Codex and say **“Open Resume Review.”** Codex opens the upload page for you. Add your `.md`, `.docx`, or searchable `.pdf` resume and the job posting URL or full description, then click **Review my resume**. Scanned PDFs need OCR first.
+
+You do not need to run an npm command for this route. The review uses your signed-in Codex CLI account; if account access or a local dependency is missing, ask Codex to help set it up.
+
+## Run with npm
 
 Install [Node.js 20 or newer](https://nodejs.org/), then run:
 
@@ -88,7 +94,7 @@ Claude's existing `/resume-writer` command remains available. In Cursor or Copil
 
 ## Setup
 
-The [npm quick start](#quick-start-npm) handles the app’s Python and export dependencies automatically. The options below describe using repository skills in an AI editor or CLI. Direct Python commands require the environment described above. Browser review also requires a supported AI CLI installed and signed in.
+The [npm setup](#run-with-npm) handles the app’s Python and export dependencies automatically. The options below describe using repository skills in an AI editor or CLI. Direct Python commands require the environment described above. Browser review also requires a supported AI CLI installed and signed in.
 
 ---
 
