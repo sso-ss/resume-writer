@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Render an annotated HTML review for a Markdown or Word resume."""
+"""Render an annotated HTML review for a Markdown, Word, or text-based PDF resume."""
 
 from __future__ import annotations
 
@@ -113,6 +113,146 @@ def docx_blocks(path: Path) -> list[Block]:
     return blocks
 
 
+def pdf_blocks(path: Path) -> list[Block]:
+    """Extract selectable PDF text and recover resume paragraphs from text geometry."""
+    try:
+        from pypdf import PdfReader
+    except ImportError as error:
+        raise ValueError("PDF review requires pypdf: python3 -m pip install 'pypdf>=5,<7'") from error
+
+    try:
+        reader = PdfReader(str(path), strict=False)
+        if reader.is_encrypted and not reader.decrypt(""):
+            raise ValueError("This PDF is password-protected. Remove its password before uploading.")
+        if len(reader.pages) > 30:
+            raise ValueError("This PDF has more than 30 pages. Upload only the resume.")
+    except ValueError:
+        raise
+    except Exception as error:
+        raise ValueError("This PDF could not be opened. Check that it is a valid, unprotected PDF.") from error
+
+    pages: list[list[dict]] = []
+    for page in reader.pages:
+        lines: list[dict] = []
+        parts: list[str] = []
+        line_x = line_y = line_size = None
+
+        def flush_line() -> None:
+            nonlocal parts, line_x, line_y, line_size
+            text = re.sub(r"\s+", " ", "".join(parts)).strip()
+            if text:
+                lines.append({"text": text, "x": line_x, "y": line_y, "size": line_size})
+            parts, line_x, line_y, line_size = [], None, None, None
+
+        def collect(text, _cm, tm, _font, font_size) -> None:
+            nonlocal line_x, line_y, line_size
+            if not text:
+                return
+            x = float(tm[4]) if len(tm) > 5 else 0.0
+            y = float(tm[5]) if len(tm) > 5 else 0.0
+            for piece in re.findall(r"\n|[^\n]+", text):
+                if piece == "\n":
+                    flush_line()
+                    continue
+                if (parts and line_y is not None and abs(y - line_y) > 1.5
+                        and (x != 0.0 or y != 0.0)):
+                    flush_line()
+                if not parts:
+                    line_x = x if x != 0.0 else None
+                    line_y = y if y != 0.0 else None
+                    line_size = float(font_size) if font_size else None
+                parts.append(piece)
+
+        try:
+            page.extract_text(visitor_text=collect)
+        except Exception as error:
+            raise ValueError("This PDF could not be read. Export a searchable, unprotected PDF and try again.") from error
+        flush_line()
+        if lines:
+            pages.append(lines)
+
+    if not pages:
+        raise ValueError("No selectable text was found. This may be a scanned PDF; use OCR or upload Word/Markdown instead.")
+
+    paragraphs: list[dict] = []
+    for lines in pages:
+        current: list[dict] = []
+
+        def flush_paragraph() -> None:
+            if not current:
+                return
+            text_parts = [line["text"] for line in current]
+            text = text_parts[0]
+            for following in text_parts[1:]:
+                if text.endswith("-") and following[:1].islower():
+                    text += following
+                else:
+                    text += " " + following
+            text = re.sub(r"\s+", " ", text).strip()
+            paragraphs.append({
+                "text": text,
+                "x": current[0]["x"],
+                "size": current[0]["size"],
+            })
+            current.clear()
+
+        for line in lines:
+            if current:
+                previous = current[-1]
+                gap = (abs(previous["y"] - line["y"])
+                       if previous["y"] is not None and line["y"] is not None else 0)
+                font_size = max(previous["size"] or 0, line["size"] or 0)
+                section_line = re.sub(r"[^a-z& ]", "", line["text"].lower()).strip() in SECTION_HEADINGS
+                explicit_bullet = re.match(r"^\s*[•●▪◦‣*-]\s+", line["text"])
+                if section_line or explicit_bullet or gap > max(2.0, font_size * 1.5):
+                    flush_paragraph()
+            current.append(line)
+        flush_paragraph()
+
+    sizes = sorted(item["size"] for item in paragraphs if item["size"])
+    body_size = sizes[len(sizes) // 2] if sizes else 0
+    blocks: list[Block] = []
+    section = "Header"
+    section_x = None
+    first_text = True
+    for item in paragraphs:
+        text = item["text"].strip()
+        if not text:
+            continue
+        normalized = re.sub(r"[^a-z& ]", "", text.lower()).strip()
+        if normalized in SECTION_HEADINGS:
+            section = text
+            section_x = item["x"]
+            blocks.append(Block(text, "section", section))
+            continue
+        if first_text:
+            blocks.append(Block(text, "name", "Header"))
+            first_text = False
+            continue
+
+        marker = re.match(r"^\s*[•●▪◦‣*-]\s+", text)
+        if marker:
+            text = text[marker.end():].strip()
+        if section.lower() in REVIEWED_BULLET_SECTIONS:
+            x = item["x"]
+            indented = x is not None and section_x is not None and x > section_x + 5
+            aligned_with_heading = x is not None and section_x is not None and x <= section_x + 5
+            date_or_title = bool(re.search(
+                r"\b(?:19|20)\d{2}\b|\b(?:present|current)\b|\b(?:jan|feb|mar|apr|may|jun|jul|aug|sep|oct|nov|dec)[a-z]*\b|\|",
+                text, re.I,
+            )) and len(text) <= 180
+            title_style = bool(item["size"] and body_size and item["size"] >= body_size * 1.08)
+            if not marker and ((aligned_with_heading and (date_or_title or title_style))
+                               or (date_or_title and title_style and not indented)):
+                kind = "role"
+            else:
+                kind = "bullet"
+        else:
+            kind = "paragraph"
+        blocks.append(Block(text, kind, section))
+    return blocks
+
+
 def extract_blocks(path: Path) -> list[Block]:
     if not path.is_file():
         raise ValueError(f"Resume not found: {path}")
@@ -120,7 +260,9 @@ def extract_blocks(path: Path) -> list[Block]:
         return markdown_blocks(path)
     if path.suffix.lower() == ".docx":
         return docx_blocks(path)
-    raise ValueError("Supported resume types are .md and .docx")
+    if path.suffix.lower() == ".pdf":
+        return pdf_blocks(path)
+    raise ValueError("Supported resume types are .md, .docx, and text-based .pdf")
 
 
 def normalize(text: str) -> str:

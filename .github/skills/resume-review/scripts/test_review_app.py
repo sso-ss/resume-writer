@@ -179,7 +179,7 @@ class ApplicationTests(unittest.TestCase):
 
     def test_validation_rejects_missing_job_unsupported_corrupt_empty_and_large_files(self):
         app = ReviewApplication(self.root, lambda *args: self.fail('Invalid upload reached analysis'))
-        for payload in [upload(source=''), upload(filename='resume.pdf'), upload(file='@@'),
+        for payload in [upload(source=''), upload(filename='resume.txt'), upload(file='@@'),
                         upload(file=''), upload(filename='resume.docx'),
                         upload(file=base64.b64encode(b'a' * (5 * 1024 * 1024 + 1)).decode())]:
             with self.subTest(payload_keys=list(payload)):

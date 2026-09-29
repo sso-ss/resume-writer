@@ -4,7 +4,7 @@ The upload app supports Codex CLI, Claude Code, Cursor Agent CLI, and GitHub Cop
 
 ## Setup
 
-- Install Python 3 and `python-docx` in the environment that runs the server. For an isolated setup: `python3 -m venv .venv`, then `.venv/bin/python -m pip install python-docx` (Windows: `.venv\Scripts\python`).
+- Install Python 3 and `python-docx` in the environment that runs the server. PDF uploads also need `pypdf`. For an isolated setup: `python3 -m venv .venv`, then `.venv/bin/python -m pip install python-docx 'pypdf>=5,<7'` (Windows: `.venv\Scripts\python`).
 - [Codex CLI](https://developers.openai.com/codex/cli/): install Codex, run `codex`, and finish sign-in. `codex` must be on the server's PATH.
 - [Claude Code](https://code.claude.com/docs/en/overview): install a current Claude Code version, run `claude`, and finish sign-in. `claude` must be on the server's PATH. The adapter requires print mode, JSON schema output, tool restrictions, and session controls; update older versions if these options are unavailable.
 - [Cursor Agent CLI](https://cursor.com/docs/cli/overview): install the CLI (`agent` or `cursor-agent` on PATH), then run `agent login` with your Cursor account. The desktop editor launcher alone is insufficient.
