@@ -179,10 +179,10 @@ def job_source(value):
 def validate_upload(payload, directory):
     name = payload.get("filename")
     if not isinstance(name, str):
-        raise ReviewError("Choose a Word (.docx) or Markdown (.md) resume.")
+        raise ReviewError("Choose a Word (.docx), Markdown (.md), or text-based PDF (.pdf) resume.")
     suffix = Path(name).suffix.lower()
-    if suffix not in (".md", ".docx"):
-        raise ReviewError("Choose a Word (.docx) or Markdown (.md) resume.")
+    if suffix not in (".md", ".docx", ".pdf"):
+        raise ReviewError("Choose a Word (.docx), Markdown (.md), or text-based PDF (.pdf) resume.")
     try:
         content = base64.b64decode(payload.get("file", ""), validate=True)
     except (ValueError, TypeError, binascii.Error):
@@ -197,7 +197,11 @@ def validate_upload(payload, directory):
                 if len(archive.infolist()) > 2000 or sum(item.file_size for item in archive.infolist()) > 25 * 1024 * 1024:
                     raise ValueError("Document is too large to unpack")
         blocks = extract_blocks(path)
-    except Exception:
+    except Exception as error:
+        if suffix == ".pdf":
+            if isinstance(error, ValueError):
+                raise ReviewError(str(error)) from error
+            raise ReviewError("This PDF could not be read. Use a valid, searchable, unprotected PDF smaller than 5 MB.") from error
         raise ReviewError("This file could not be read. Export it as .docx or UTF-8 Markdown and try again.")
     if not blocks or not any(block.text.strip() for block in blocks):
         raise ReviewError("No readable text was found. Choose a resume containing text.")

@@ -26,10 +26,10 @@ textarea{display:block;width:100%;resize:vertical;min-height:172px;border:1px so
 <div class="connection"><div class="connection-row"><label for="ai-provider">Review with</label><select id="ai-provider" aria-describedby="connection-status"><option value="">Choose your AI tool</option></select></div><p id="connection-status" role="status"></p></div>
 <form id="review-form"><div class="upload-field">
 <div class="field-title"><span class="number" aria-hidden="true">1</span><span id="resume-label">Add your resume</span></div>
-<input type="file" id="resume-file" accept=".docx,.md" aria-labelledby="resume-label" hidden>
+<input type="file" id="resume-file" accept=".docx,.md,.pdf,application/pdf" aria-labelledby="resume-label" hidden>
 <div class="drop" id="drop-zone">
 <svg class="upload-icon" viewBox="0 0 36 36" fill="none" aria-hidden="true"><path d="M10 3.5h11l7 7v20H10zM21 3.5v7h7M18 25V15m-4 4 4-4 4 4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<strong>Drag your resume here</strong><p>or <button class="browse" id="browse" type="button">choose a file</button></p><p style="margin-top:12px">Word (.docx) or Markdown (.md) · Up to 5 MB</p>
+<strong>Drag your resume here</strong><p>or <button class="browse" id="browse" type="button">choose a file</button></p><p style="margin-top:12px">Word (.docx), Markdown (.md), or searchable PDF (.pdf) · Up to 5 MB</p><p>Scanned PDFs need OCR first.</p>
 </div>
 <div id="selected-file" class="file-selection" hidden><span class="check" aria-hidden="true">✓</span><div class="file-details"><strong id="file-name"></strong><small id="file-size"></small></div><button type="button" class="remove" id="remove-file" aria-label="Remove selected resume">×</button></div>
 </div><div class="job-field"><label class="field-title" for="job-source"><span class="number" aria-hidden="true">2</span>The role you have in mind</label><textarea id="job-source" required maxlength="80000" placeholder="Paste the job posting link or the full job description…" aria-describedby="job-hint"></textarea><p class="hint" id="job-hint">A specific job helps us give you specific feedback.</p></div>
@@ -67,7 +67,7 @@ function selectFile(files) {
   if (submitting) return;
   if (files.length !== 1) { showError('Choose one resume at a time.'); return; }
   const file = files[0];
-  if (!/\.(docx|md)$/i.test(file.name)) { showError('Choose a Word (.docx) or Markdown (.md) resume.'); return; }
+  if (!/\.(docx|md|pdf)$/i.test(file.name)) { showError('Choose a Word (.docx), Markdown (.md), or searchable PDF (.pdf) resume.'); return; }
   if (!file.size || file.size > 5 * 1024 * 1024) { showError('Choose a non-empty resume smaller than 5 MB.'); return; }
   selected = file; $('file-name').textContent = file.name;
   $('file-size').textContent = (file.size < 1024 * 1024 ? Math.max(1, Math.round(file.size / 1024)) + ' KB' : (file.size / 1024 / 1024).toFixed(1) + ' MB') + ' · Ready to review';

@@ -1,6 +1,6 @@
 ---
 name: resume-review
-description: Reviews uploaded resumes against a target job using role-relevant criteria and generates annotated HTML with requirement matches, highlighted issues, bullet-level alignment, and evidence-based revisions. Use when a user asks to open Resume Review, review a resume, critique it, match a job, or identify what to fix. Opens the upload screen by default; also supports reviewing provided Markdown or Word files in chat.
+description: Reviews uploaded resumes against a target job using role-relevant criteria and generates annotated HTML with requirement matches, highlighted issues, bullet-level alignment, and evidence-based revisions. Use when a user asks to open Resume Review, review a resume, critique it, match a job, or identify what to fix. Opens the upload screen by default; also supports reviewing provided Markdown, Word, or searchable PDF files in chat.
 ---
 
 # Resume Review
@@ -9,7 +9,7 @@ description: Reviews uploaded resumes against a target job using role-relevant c
 
 Review an existing resume against the user's target job. Do not rewrite the full resume unless the user approves after seeing the review. This is a qualitative, evidence-based recruiter review, not an ATS certification or numeric match score.
 
-Supported uploads: `.md` and `.docx`.
+Supported uploads: `.md`, `.docx`, and text-based `.pdf`. Scanned PDFs need OCR before review.
 
 ## Default Entry Point: Open The Upload Screen
 
