@@ -5,6 +5,8 @@ description: "Writes and tailors Product Designer resumes. Use when creating, re
 
 # Product Designer Resume Writing
 
+This is the shared workflow used by all host launchers. Resolve scripts, references, and templates relative to the directory containing this file. Command examples using `.github/skills/...` assume the repository root; when launched from another workspace, use the resolved shared paths and save the user's resume in their chosen workspace.
+
 Start by pasting career information or saying “help me write a resume” to begin the interview.
 
 ## When to Use

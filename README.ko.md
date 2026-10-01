@@ -87,6 +87,10 @@ AI 도구, 이력서, 채용공고를 선택하기 전의 기본 시작 화면�
 
 기존 Claude `/resume-writer` 명령도 유지됩니다. 새 스킬이 보이지 않으면 새 세션을 시작하세요. Cursor/Copilot에서는 스킬을 선택하거나 자연어로 요청할 수 있습니다. 스킬 등록과 AI 연결은 별개이며, 업로드 화면은 Codex, Claude Code, Cursor Agent CLI, GitHub Copilot CLI를 지원합니다. 선택한 CLI의 설치와 로그인이 필요합니다.
 
+다른 로컬 작업 폴더에서도 두 스킬을 사용하려면 `python3 bin/register-skills.py`를 실행하세요. Codex (`~/.codex/skills` 또는 `$CODEX_HOME/skills`), Claude (`~/.claude/skills`), Cursor (`~/.cursor/skills`), Copilot (`~/.copilot/skills`)에 실행기를 등록합니다. `--host cursor`처럼 도구 하나만 지정할 수도 있습니다. 실행기는 현재 저장소 경로를 참조하므로 저장소를 옮기면 다시 등록하세요. 기존 사용자 스킬은 보존되며 새 세션에서 등록된 스킬을 읽습니다. CLI 설치와 계정 로그인은 별도로 필요합니다.
+
+프로젝트 실행기는 심볼릭 링크 대신 일반 `SKILL.md` 파일을 사용합니다. 직접 검색할 때는 숨김 폴더를 포함하세요: `rg --files --hidden .agents .claude .cursor .github -g SKILL.md`. 이전 프로젝트 링크를 수정하려면 `python3 bin/register-skills.py --scope project`를 실행하세요.
+
 ## 주요 기능
 
 - **처음부터 이력서 작성** — 질문에 답하고 미리보기를 검토한 뒤 Word 또는 PDF로 내보내기
@@ -275,17 +279,18 @@ Resume/
 ├── README.ko.md
 ├── package.json                        # npm 패키지와 명령
 ├── bin/resume-writer.mjs                # 명령 진입점
+├── bin/register-skills.py              # 네 도구의 로컬 스킬 등록
 ├── lib/                                # CLI와 자동 실행 환경 설정
 ├── docs/images/                        # README 스크린샷
 ├── examples/                           # 가상 이력서 예시
 ├── requirements.txt                    # 기본 Python 의존성
-├── .agents/skills/                     # Codex용 공통 스킬 링크
+├── .agents/skills/                     # Codex용 공통 스킬 실행기
 ├── .claude/
 │   ├── commands/resume-writer.md        # 기존 Claude 명령
-│   └── skills/                         # 작성 스킬 링크와 리뷰 실행기
+│   └── skills/                         # 작성 및 리뷰 실행기
 ├── .cursor/
 │   ├── rules/resume-writer.mdc          # Cursor 에이전트 규칙
-│   └── skills/                         # 작성 스킬 링크와 리뷰 실행기
+│   └── skills/                         # 작성 및 리뷰 실행기
 ├── .github/
 │   ├── agents/resume-writer.agent.md    # Copilot 에이전트
 │   └── skills/
@@ -304,4 +309,4 @@ Resume/
 └── output/reviews/uploads/             # 로컬 리뷰 데이터 (Git 제외)
 ```
 
-공통 구현은 `.github/skills`에 있습니다. 저장소를 복제할 때 심볼릭 링크를 유지하거나, 공통 스킬 폴더 전체를 해당 도구의 스킬 폴더로 복사하세요. `SKILL.md`만 복사하면 필요한 스크립트와 템플릿이 누락됩니다.
+공통 구현은 `.github/skills`에 있습니다. 각 도구의 실행기는 공통 워크플로를 읽고 해당 폴더에서 스크립트와 리소스를 찾습니다. 개인 등록에는 `bin/register-skills.py`를 사용하세요. 저장소 없이 다른 컴퓨터로 옮기려면 공통 스킬 폴더 전체를 복사해야 합니다. `SKILL.md`만 복사하면 필요한 스크립트와 템플릿이 누락됩니다. 리뷰 실행 시 해당 도구의 `--provider`를 명시하세요.

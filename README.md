@@ -87,6 +87,10 @@ Both skills are registered in the repository for Codex (`.agents/skills`), Claud
 
 Claude's existing `/resume-writer` command remains available. In Cursor or Copilot, select the available skill or ask to build/review a resume. Restart the host session if newly registered skills are not visible. The upload screen supports Codex CLI, Claude Code, Cursor Agent CLI, and GitHub Copilot CLI. Install and sign in to the selected CLI; being signed in to an editor alone may not sign in its CLI.
 
+To make both skills available from other local workspaces, run `python3 bin/register-skills.py`. It registers launchers in `~/.codex/skills` (or `$CODEX_HOME/skills`), `~/.claude/skills`, `~/.cursor/skills`, and `~/.copilot/skills`. Use `--host cursor` (or another host name) to register only one tool. The launchers point to this checkout, so keep it at the same location and rerun the installer if it moves. Existing custom entries are preserved; new host sessions load the registrations. This installs skill instructions, not the AI CLIs or their account sign-ins.
+
+Project launchers are regular `SKILL.md` files, so discovery does not depend on following directory symlinks. For a manual project search, include hidden directories: `rg --files --hidden .agents .claude .cursor .github -g SKILL.md`. Repair legacy project skill links with `python3 bin/register-skills.py --scope project`.
+
 ## What It Does
 
 - **Creates resumes from scratch** — answer a few questions, review the preview, and export Word or PDF
@@ -278,17 +282,18 @@ Resume/
 ├── README.ko.md
 ├── package.json                        # npm package and command
 ├── bin/resume-writer.mjs                # Command entry point
+├── bin/register-skills.py              # Local skill registration for all four tools
 ├── lib/                                # CLI and automatic runtime setup
 ├── docs/images/                        # README screenshots
 ├── examples/                           # Fictional resume sample
 ├── requirements.txt                    # Core Python dependencies
-├── .agents/skills/                     # Codex links to the shared skills
+├── .agents/skills/                     # Codex launchers for the shared skills
 ├── .claude/
 │   ├── commands/resume-writer.md        # Existing Claude command
-│   └── skills/                         # Writing link and review launcher
+│   └── skills/                         # Writing and review launchers
 ├── .cursor/
 │   ├── rules/resume-writer.mdc          # Cursor agent rule
-│   └── skills/                         # Writing link and review launcher
+│   └── skills/                         # Writing and review launchers
 ├── .github/
 │   ├── agents/resume-writer.agent.md    # Copilot agent
 │   └── skills/
@@ -307,4 +312,4 @@ Resume/
 └── output/reviews/uploads/             # Local review data (Git-ignored)
 ```
 
-The `.github/skills` directories contain the shared implementations. Preserve symbolic links when cloning, or copy the complete shared skill folder into the appropriate host's skill directory. Copying only `SKILL.md` omits the scripts and templates.
+The `.github/skills` directories contain the shared implementations. The host launchers read those workflows and resolve scripts and resources there. Use `bin/register-skills.py` for personal registration. If transferring the skill to another machine without this checkout, copy the complete shared skill folder; copying only its `SKILL.md` omits the scripts and templates. Resume Review must use the destination host's explicit `--provider`.

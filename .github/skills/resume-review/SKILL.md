@@ -5,6 +5,8 @@ description: Reviews uploaded resumes against a target job using role-relevant c
 
 # Resume Review
 
+This is the shared workflow used by all host launchers. Resolve scripts, references, and templates relative to the directory containing this file, rather than a launcher directory or the current workspace. Command examples using `.github/skills/...` assume the repository root; from another workspace, use the resolved shared paths. Resolve resume inputs and review outputs against the user's chosen working directory. Select the current host's explicit provider even if the workflow was found through another tool's skill folder.
+
 ## Scope
 
 Review an existing resume against the user's target job. Do not rewrite the full resume unless the user approves after seeing the review. This is a qualitative, evidence-based recruiter review, not an ATS certification or numeric match score.

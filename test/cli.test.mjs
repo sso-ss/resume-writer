@@ -70,7 +70,7 @@ test('npm bundle includes runtime assets and excludes personal resumes, uploads,
     assert.equal(result.status, 0, result.stderr);
     const files = JSON.parse(result.stdout)[0].files.map(file => file.path);
     for (const path of [
-      'bin/resume-writer.mjs', 'lib/runtime.mjs', 'requirements.txt',
+      'bin/resume-writer.mjs', 'bin/register-skills.py', 'lib/runtime.mjs', 'requirements.txt',
       '.github/skills/resume-review/scripts/review_app.py',
       '.github/skills/resume-review/templates/review-start.html',
       '.github/skills/resume-review/references/review-rubric.md',
